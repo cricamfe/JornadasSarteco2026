@@ -1,5 +1,4 @@
-%%%%% Fichero de ejemplo LaTeX que ilustra el uso de la Hoja de Estilo %%%%%%
-%%%%% Jornadas.cls para Jornadas Sarteco
+%%%%% Jornadas Sarteco 2026 — CASTM: ZKP Kernels on CGRA %%%%%%
 
 \documentclass[twocolumn,twoside]{Jornadas}
 \usepackage[utf8]{inputenc}
@@ -11,111 +10,170 @@
 \usepackage{adjustbox}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{xcolor}
 \usepackage{caption}
 \captionsetup{font=footnotesize}
 \usepackage[caption=false,font=footnotesize]{subfig}
-%\setlength{\marginparwidth}{2cm}
-%\usepackage{todonotes}
 \usepackage{placeins}
 \usepackage{hyperref}
+\hypersetup{hidelinks}
 \usepackage{url}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{makecell}
+\usetikzlibrary{shapes,arrows,positioning,calc,fit,backgrounds,matrix,arrows.meta,shapes.geometric,patterns,decorations.pathreplacing}
 
 % -*- Ajustes LaTeX en relación a las figuras -*-
-\setcounter{topnumber}{10}     % Max. numero de figs. on top
-\setcounter{bottomnumber}{10}  % Max. numero de figs. abajo
-\setcounter{totalnumber}{10}   % Max. numero de figs. por pagina
-\renewcommand{\topfraction}{1} % Max. fraccion de pagina ocupada por figs.
+\setcounter{topnumber}{10}
+\setcounter{bottomnumber}{10}
+\setcounter{totalnumber}{10}
+\renewcommand{\topfraction}{1}
 \renewcommand{\bottomfraction}{1}
-\renewcommand{\textfraction}{0}  % Min. fraccion de pagina ocupada por texto
-\renewcommand{\floatpagefraction}{1} % Max. espacio de pagina solo con figs.
+\renewcommand{\textfraction}{0}
+\renewcommand{\floatpagefraction}{1}
+
+% ── Color palette ──
+\definecolor{cgrablue}{HTML}{2563EB}
+\definecolor{cgragreen}{HTML}{16A34A}
+\definecolor{cgrared}{HTML}{DC2626}
+\definecolor{cgraorange}{HTML}{EA580C}
+\definecolor{cgrapurple}{HTML}{9333EA}
+\definecolor{cgragray}{HTML}{6B7280}
+\definecolor{cgralabel}{HTML}{7C2D12}
+\definecolor{cgraaddr}{HTML}{9A3412}
+\definecolor{cgralight}{HTML}{EFF6FF}
+\definecolor{codebg}{HTML}{F8FAFC}
 
 \definecolor{gray97}{gray}{.97}
 \definecolor{gray75}{gray}{.75}
 \definecolor{gray45}{gray}{.45}
 
+% ── Listings: OpenEdge DSL ──
+\lstdefinelanguage{edsl}{
+  alsoletter={_},
+  morekeywords=[1]{target,build,optimize,scheduler,kernel,function,cycle,bundle,at,all,for,in,range,let,if,else,while,goto,io,load,store},
+  morekeywords=[2]{EXIT,NOP,BSFA,BZFA,LWI,SWI,SADD,SSUB,SMUL,JUMP,ROUT,SELF,RCL,RCR,RCT,RCB,ZERO,R0,R1,R2,R3},
+  morekeywords=[3]{std,extract_bytes,extract_bytes_col,extract_bytes_row,carry_chain,broadcast,normalize,reduce,route,stash},
+  morekeywords=[4]{subrA,subrB,subrC,ret1,ret3},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  moredelim=*[s][\bfseries\itshape\color{cgraaddr}]{@}{:},
+  literate={std::}{{\textcolor{cgrapurple}{std::}}}5,
+}
+
 \lstset{
-     inputencoding=utf8,
-     extendedchars=true,
-     backgroundcolor=\color{gray97},
-     %
-     stringstyle=\ttfamily,
-     showstringspaces = false,
-     basicstyle=\scriptsize\ttfamily,
-     commentstyle=\color{gray45},
-     keywordstyle=\bfseries,
-     linewidth=.98\columnwidth,
-     xleftmargin=3mm,
-     breaklines=true,
-     numbers=left,
-     numbersep=6pt,
-     numberstyle=\tiny,
-     numberfirstline = false,
-     firstnumber=auto,
-     breaklines=true,
-     %
-     escapeinside={(*@}{@*)},
-     literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
-   }
+  language=edsl,
+  inputencoding=utf8,
+  extendedchars=true,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=[1]\bfseries\color{cgrablue},
+  keywordstyle=[2]\color{cgrared},
+  keywordstyle=[3]\color{cgrapurple},
+  keywordstyle=[4]\bfseries\color{cgralabel},
+  commentstyle=\itshape\color{cgragreen!70!black},
+  stringstyle=\color{cgraorange},
+  numbers=left,
+  numberstyle=\tiny\color{cgragray},
+  numbersep=5pt,
+  frame=single,
+  rulecolor=\color{cgragray!40},
+  backgroundcolor=\color{codebg},
+  breaklines=true,
+  captionpos=b,
+  tabsize=4,
+  columns=flexible,
+  linewidth=.98\columnwidth,
+  xleftmargin=3mm,
+  aboveskip=8pt,
+  belowskip=4pt,
+  escapeinside={(*@}{@*)},
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1,
+}
+
+% ── Listings: CSV raw format ──
+\lstdefinelanguage{csvraw}{
+  basicstyle=\ttfamily\scriptsize\color{cgragray!80!black},
+  frame=single,
+  rulecolor=\color{cgragray!40},
+  backgroundcolor=\color{cgrared!3},
+  numbers=left,
+  numberstyle=\tiny\color{cgragray},
+  numbersep=5pt,
+  breaklines=true,
+  captionpos=b,
+  xleftmargin=3mm,
+}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-\newtheorem{theorem}{Teorema}
+\newcommand{\babybear}{p = 2^{31} - 2^{27} + 1}
+\newcommand{\NCC}{N_{\mathrm{CC}}}
+\newcommand{\Mod}{\operatorname{mod}}
+\newcommand{\castm}{CASTM}
+\newcommand{\placeholder}[1]{\colorbox{yellow!30}{\textit{#1}}}
+\newcommand{\statmin}{\operatorname{min}}
+\newcommand{\cc}[1]{#1~CC}
+\newcommand{\pct}[1]{#1\%}
+\newcommand{\timex}[1]{#1$\times$}
+\newcommand{\ujperm}[1]{#1~$\mu$J/perm}
+\newcommand{\nj}[1]{#1\,nJ}
+\newcommand{\lines}[1]{#1~lines}
+\newcommand{\kpermperj}[1]{#1~kperm/J}
+\newcommand{\mw}[1]{#1\,mW}
 
-\hyphenation{pa-ra-le-lis-mo pro-cee-dings}
+% Centralized paper metrics layer.
+\input{paper_metrics_manual}
+\input{generated/paper_metrics_auto}
+\input{generated/merkle_eval_metrics_auto}
 
 %Directorios en los que se buscan las figuras
-\graphicspath{{.}{./Figuras/}}
+\graphicspath{{.}{./Figuras/}{./figures/}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-\title{Usando la hoja de estilo Jornadas.cls}
+\title{CASTM: An API for Accelerating Zero-Knowledge Proof Kernels on CGRA Architectures}
 
 \author{%
-     Jesús González%
-     \thanks{Dpto. de Informática, Universidad de Tombuctú, e-mail: {\tt gonzales@tbt.edu.}},
-     Ángela Sánchez$^2$ y Moisés Salmerón%
-     \thanks{Dpto. de Arquitectura de Computadores, Universidad de Pernambuco, 
-     e-mail: {\tt \{sanchez,salmeron\}@per.edu.}}
+     Cristian Campos Ferrer, Ángeles G.\ Navarro y Sonia González-Navarro%
+     \thanks{Dpto.\ de Arquitectura de Computadores, Universidad de Málaga,
+     e-mail: {\tt \{cricamfe,angeles,sonia\}@ac.uma.es}}
 }
 
 \maketitle
-% Oculta las cabeceras y los números de página.
-% Ambos elementos se añadirán durante la edición de las actas completas.
 \markboth{}{}
-\pagestyle{empty} 
-\thispagestyle{empty} % Oculta el número de la primera página
+\pagestyle{empty}
+\thispagestyle{empty}
 
 \begin{abstract}
-Este artículo explica cómo usar la hoja de estilo \LaTeX\ para las
-Jornadas Sarteco.
+Wearable biomedical devices increasingly require on-device privacy guarantees through Zero-Knowledge Proofs~(ZKPs), yet the underlying cryptographic kernels, based on modular exponentiation over prime fields, far exceed what low-power microcontrollers can deliver. Coarse-Grained Reconfigurable Arrays~(CGRAs) offer near-ASIC efficiency with the reprogrammability needed to track evolving ZKP standards, but programming them requires manual, cycle-by-cycle scheduling across a spatial processing-element mesh.
+%
+We present \castm{}, a \textit{CGRA API} \& \textit{Spatial Temporal Mapper} for the OpenEdgeCGRA architecture. \castm{} preserves explicit spatial-temporal control while raising the abstraction level through structured abstractions and architecture-aware operators that encapsulate recurring modular-arithmetic idioms. For the S-box layer, a key component of the popular ZKP-friendly hash function Poseidon2, \castm{} achieves \timex{\MetricSboxCastmSpeedupVsManual} speedup w.r.t.\ the hand-optimized version while reducing source code by approximately \timex{\MetricLocCompressionVsManual}.
+We also identify that for long ZKP kernels multi-batch configuration reload is the dominant bottleneck, and show that increasing the Configuration Register File from 32 to 512 entries (+\pct{\MetricCrfFullFitAreaPct} FPGA area) allow us to deploy the full Poseidon2 kernel on the CGRA achieving \timex{\MetricMerkleOffloadProjectedSpeedup} speedup and \MetricMerkleOffloadEnergySavingsPct\% of energy savings over a ultra-low power RISC-V CPU core.
 \end{abstract}
 
 \begin{keywords}
-Hoja de estilo, \LaTeX, Jornadas Sarteco.
+OpenEdgeCGRA, Zero-Knowledge Proofs, Poseidon2.
 \end{keywords}
 
-%Añade los ficheros que necesites:
-
-\input{01-Intro.tex}
-\input{02-Background.tex}
-\input{03-Method.tex}
-\input{04-Experimental.tex}
-\input{05-Conclusions.tex}
-
+\input{01-Intro}
+\input{02-Background}
+\input{03-Method}
+\input{04-Experimental}
+\input{05-Conclusions}
 
 \section*{Agradecimientos}
 
-Añadir en esta sección no numerada los posibles agradecimientos a proyectos,
-instituciones o personas. Por ejemplo: El presente trabajo ha sido financiado
-mediante  el proyecto xxxx-xxxxx-xxx. 
+Este trabajo ha sido financiado por el XXX (YYYY) a través del proyecto ZZZZ.
 
-%Comenta la línea \nocite para que sólo se incluyan en las referencias
-%las entradas que esté referenciadas en el texto con \cite{}
-\nocite{*}
 \bibliographystyle{Jornadas}
 \bibliography{biblio}
 
 \end{document}
-

@@ -1,0 +1,555 @@
+[
+  {
+    "macro": "MetricMerkleLeaves",
+    "value": "16",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "header.merkle_leaves",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleHashes",
+    "value": "15",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "header.merkle_hashes",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuClockMHz",
+    "value": "100",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/HEEPsilon/hw/vendor/esl_epfl_x_heep/sw/device/heepsilon_clock_config.h",
+    "formula": "HEEPSILON_CPU_CLK_HZ / 1e6",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCgraClockMHz",
+    "value": "100",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/HEEPsilon/hw/vendor/esl_epfl_x_heep/sw/device/heepsilon_clock_config.h",
+    "formula": "HEEPSILON_CGRA_CLK_HZ / 1e6",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleWallTimerMHz",
+    "value": "100",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "common SCENARIO_*.wall_timer_hz / 1e6",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleProjCpuClockMHz",
+    "value": "250",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/scripts/analysis/export_cgra_poseidon2_eval_metrics.py",
+    "formula": "projection policy constant PROJECTED_CPU_CLK_HZ / 1e6",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleProjCgraClockMHz",
+    "value": "100",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/scripts/analysis/export_cgra_poseidon2_eval_metrics.py",
+    "formula": "projection policy constant PROJECTED_CGRA_CLK_HZ / 1e6",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuPowerModelMW",
+    "value": "2.5",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+    "formula": "metadata.cpu_power_mw",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecSchedPolicy",
+    "value": "ratio-250-100",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "COEXEC_SCHED.policy",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecSchedCgraSharePct",
+    "value": "57",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "COEXEC_SCHED.cgra_share_pct",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecSchedCpuSharePct",
+    "value": "43",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "COEXEC_SCHED.cpu_share_pct",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecSchedProjCpuEqOneHundredCC",
+    "value": "73{,}661",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "COEXEC_SCHED.projected_cpu_eq100_cc",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecSchedReferenceCgraCC",
+    "value": "55{,}686",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "COEXEC_SCHED.cgra_cc",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCC",
+    "value": "2{,}750{,}546",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_tot",
+    "notes": "Alias of TotalCC for paper tables that use CC without the suffix."
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCpuCC",
+    "value": "2{,}750{,}616",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_CPU",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCgraCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_CGRA",
+    "notes": "Accelerator active cycles exported as max_col(active). In this RTL, the active counter already covers the full non-parked residency of the column, including stall periods."
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCgraProductiveCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "max_col(active - stall)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCgraStallCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "max_col(stall)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyTotalCC",
+    "value": "2{,}750{,}546",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_tot",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyTimeUs",
+    "value": "27{,}505.5",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_tot / wall_timer_hz",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyTimeMs",
+    "value": "27.505",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.TimeUs / 1000",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlySpeedup",
+    "value": "1.00",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_tot / SCENARIO_CPU.CC_tot",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyHashesPerSec",
+    "value": "545",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.hashes_per_sec",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyProjectedTimeUs",
+    "value": "11{,}002.2",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "project_wall_time_us(SCENARIO_CPU)",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyProjectedTimeMs",
+    "value": "11.002",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.ProjectedTimeUs / 1000",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyProjectedHashesPerSec",
+    "value": "1{,}363",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.hashes / ProjectedTimeUs",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCpuEnergyUJ",
+    "value": "68.765",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "cpu_power_mw * CC_CPU / cpu_clk_hz",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyCgraEnergyUJ",
+    "value": "0.000",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+    "formula": "cfgC_cgra_energy_per_kernel_uj * SCENARIO_CPU.kernels",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyTotalEnergyUJ",
+    "value": "68.765",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "CpuEnergyUJ + CgraEnergyUJ",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyEnergySavingsPct",
+    "value": "0.0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "100 * (1 - TotalEnergyUJ / MetricMerkleCpuOnlyTotalEnergyUJ)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyKernels",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.kernels",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyWfiCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.cpu.wfi",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyDsideWaitCC",
+    "value": "49{,}645",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.cpu.dside",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyMemLoad",
+    "value": "36{,}571",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.cpu.ld",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCpuOnlyMemStore",
+    "value": "13{,}068",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.cpu.st",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecCC",
+    "value": "1{,}270{,}193",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.CC_tot",
+    "notes": "Alias of TotalCC for paper tables that use CC without the suffix."
+  },
+  {
+    "macro": "MetricMerkleCoexecCpuCC",
+    "value": "1{,}270{,}264",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.CC_CPU",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecCgraCC",
+    "value": "490{,}518",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.CC_CGRA",
+    "notes": "Accelerator active cycles exported as max_col(active). In this RTL, the active counter already covers the full non-parked residency of the column, including stall periods. SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecCgraProductiveCC",
+    "value": "490{,}518",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "max_col(active - stall)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecCgraStallCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "max_col(stall)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecTotalCC",
+    "value": "1{,}270{,}193",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.CC_tot",
+    "notes": "SCENARIO_COEXEC uses a static per-level scheduler. The default ratio policy weights the chunk split with projected CPU@250 MHz vs CGRA@100 MHz single-hash throughput, even when the measured RTL run still uses 100/100."
+  },
+  {
+    "macro": "MetricMerkleCoexecTimeUs",
+    "value": "12{,}701.9",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.CC_tot / wall_timer_hz",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecTimeMs",
+    "value": "12.702",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.TimeUs / 1000",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecSpeedup",
+    "value": "2.17",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_tot / SCENARIO_COEXEC.CC_tot",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecHashesPerSec",
+    "value": "1{,}180",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.hashes_per_sec",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecProjectedTimeUs",
+    "value": "5{,}080.8",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "project_wall_time_us(SCENARIO_COEXEC)",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleCoexecProjectedTimeMs",
+    "value": "5.081",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.ProjectedTimeUs / 1000",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleCoexecProjectedHashesPerSec",
+    "value": "2{,}952",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.hashes / ProjectedTimeUs",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleCoexecCpuEnergyUJ",
+    "value": "31.757",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "cpu_power_mw * CC_CPU / cpu_clk_hz",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecCgraEnergyUJ",
+    "value": "26.933",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+    "formula": "cfgC_cgra_energy_per_kernel_uj * SCENARIO_COEXEC.kernels",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecTotalEnergyUJ",
+    "value": "58.689",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "CpuEnergyUJ + CgraEnergyUJ",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecEnergySavingsPct",
+    "value": "14.7",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "100 * (1 - TotalEnergyUJ / MetricMerkleCpuOnlyTotalEnergyUJ)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecKernels",
+    "value": "9",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.kernels",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecWfiCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.cpu.wfi",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecDsideWaitCC",
+    "value": "54{,}050",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.cpu.dside",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecMemLoad",
+    "value": "48{,}065",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.cpu.ld",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleCoexecMemStore",
+    "value": "5{,}889",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_COEXEC.cpu.st",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadCC",
+    "value": "843{,}028",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.CC_tot",
+    "notes": "Alias of TotalCC for paper tables that use CC without the suffix."
+  },
+  {
+    "macro": "MetricMerkleOffloadCpuCC",
+    "value": "28{,}014",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.CC_CPU",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadCgraCC",
+    "value": "815{,}310",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.CC_CGRA",
+    "notes": "Accelerator active cycles exported as max_col(active). In this RTL, the active counter already covers the full non-parked residency of the column, including stall periods."
+  },
+  {
+    "macro": "MetricMerkleOffloadCgraProductiveCC",
+    "value": "815{,}310",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "max_col(active - stall)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadCgraStallCC",
+    "value": "0",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "max_col(stall)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadTotalCC",
+    "value": "843{,}028",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.CC_tot",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadTimeUs",
+    "value": "8{,}430.3",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.CC_tot / wall_timer_hz",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadTimeMs",
+    "value": "8.430",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.TimeUs / 1000",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadSpeedup",
+    "value": "3.26",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_CPU.CC_tot / SCENARIO_OFFLOAD_DMA_WFI.CC_tot",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadHashesPerSec",
+    "value": "1{,}779",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.hashes_per_sec",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadProjectedTimeUs",
+    "value": "8{,}262.2",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "project_wall_time_us(SCENARIO_OFFLOAD_DMA_WFI)",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleOffloadProjectedTimeMs",
+    "value": "8.262",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.ProjectedTimeUs / 1000",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleOffloadProjectedHashesPerSec",
+    "value": "1{,}815",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.hashes / ProjectedTimeUs",
+    "notes": "First-order projection to MetricMerkleProjCpuClockMHz / MetricMerkleProjCgraClockMHz MHz. CPU-active time is frequency-scaled, the measured non-CPU wall-time residue is preserved, and the result is clipped to the CGRA active-time bound. Use as an estimate, not as a measured dual-clock result."
+  },
+  {
+    "macro": "MetricMerkleOffloadCpuEnergyUJ",
+    "value": "0.700",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "cpu_power_mw * CC_CPU / cpu_clk_hz",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadCgraEnergyUJ",
+    "value": "44.888",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+    "formula": "cfgC_cgra_energy_per_kernel_uj * SCENARIO_OFFLOAD_DMA_WFI.kernels",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadTotalEnergyUJ",
+    "value": "45.588",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "CpuEnergyUJ + CgraEnergyUJ",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadEnergySavingsPct",
+    "value": "33.7",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "100 * (1 - TotalEnergyUJ / MetricMerkleCpuOnlyTotalEnergyUJ)",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadKernels",
+    "value": "15",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.kernels",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadWfiCC",
+    "value": "90",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.cpu.wfi",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadDsideWaitCC",
+    "value": "8{,}570",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.cpu.dside",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadMemLoad",
+    "value": "3{,}912",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.cpu.ld",
+    "notes": ""
+  },
+  {
+    "macro": "MetricMerkleOffloadMemStore",
+    "value": "2{,}897",
+    "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cgra_poseidon2_eval/uart_ratio_16.log",
+    "formula": "SCENARIO_OFFLOAD_DMA_WFI.cpu.st",
+    "notes": ""
+  }
+]

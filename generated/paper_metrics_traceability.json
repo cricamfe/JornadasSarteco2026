@@ -1,0 +1,578 @@
+{
+  "metrics": [
+    {
+      "formula": "halstead_table_rows[\\castm{} (\\textbf{Ours})].ratio_to_cpp_ref",
+      "macro": "MetricHalsteadCastmRatio",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "6.4"
+    },
+    {
+      "formula": "halstead_table_rows[Compigra C++].ratio_to_cpp_ref",
+      "macro": "MetricHalsteadCompigraRatio",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "2.4"
+    },
+    {
+      "formula": "halstead_table_rows[Manual CSV].ratio_to_cpp_ref / halstead_table_rows[CASTM].ratio_to_cpp_ref",
+      "macro": "MetricHalsteadCompressionVsManual",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "10.10"
+    },
+    {
+      "formula": "halstead_table_rows[C++ (Ref.)].ratio_to_cpp_ref",
+      "macro": "MetricHalsteadCppRefRatio",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "1.0"
+    },
+    {
+      "formula": "halstead_table_rows[Manual CSV].ratio_to_cpp_ref",
+      "macro": "MetricHalsteadManualRatio",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "64.5"
+    },
+    {
+      "formula": "len(sbox_x7_mod.edsl.splitlines())",
+      "macro": "MetricLocCastm",
+      "notes": "Physical visible line count of the CASTM EDSL source.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/sbox_x7_mod.edsl",
+      "value": "340"
+    },
+    {
+      "formula": "halstead_table_rows[Compigra C++].loc",
+      "macro": "MetricLocCompigra",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "47"
+    },
+    {
+      "formula": "len(manual instructions.csv.splitlines()) / len(sbox_x7_mod.edsl.splitlines())",
+      "macro": "MetricLocCompressionVsManual",
+      "notes": "LOC compression uses physical visible line counts from the manual CSV and the CASTM EDSL source.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/manual/sbox_x7_k7/instructions.csv; /Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/sbox_x7_mod.edsl",
+      "value": "6.0"
+    },
+    {
+      "formula": "halstead_table_rows[C++ (Ref.)].loc",
+      "macro": "MetricLocCppRef",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/halstead_compigra_sbox/halstead_table_rows.csv",
+      "value": "25"
+    },
+    {
+      "formula": "len(instructions.csv.splitlines())",
+      "macro": "MetricLocManual",
+      "notes": "Physical visible line count. The file currently has no trailing newline, so wc -l reports one fewer line.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/manual/sbox_x7_k7/instructions.csv",
+      "value": "2{,}030"
+    },
+    {
+      "formula": "export policy constant CGRA_TIME_MHZ",
+      "macro": "MetricRtlCgraClockMHz",
+      "notes": "Used for CGRA deployment time conversion and real-speedup interpretation.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "100"
+    },
+    {
+      "formula": "table_rows[C].cfg_cc",
+      "macro": "MetricRtlCgraOnlyCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "56{,}416"
+    },
+    {
+      "formula": "table_rows[C].cgra_energy_uj",
+      "macro": "MetricRtlCgraOnlyCgraEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "2.993"
+    },
+    {
+      "formula": "table_rows[C].cpu_host_energy_uj",
+      "macro": "MetricRtlCgraOnlyCpuEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "0.012"
+    },
+    {
+      "formula": "1000 / table_rows[C].energy_uj",
+      "macro": "MetricRtlCgraOnlyEEKpermPerJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "332.8"
+    },
+    {
+      "formula": "table_rows[C].energy_reduction_pct",
+      "macro": "MetricRtlCgraOnlyEnergyReductionPct",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "34.5"
+    },
+    {
+      "formula": "one_to_m_reference[C].cfg_cc",
+      "macro": "MetricRtlCgraOnlyOneToMCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "68{,}643"
+    },
+    {
+      "formula": "one_to_m_reference[C].speedup_real",
+      "macro": "MetricRtlCgraOnlyOneToMSpeedupReal",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "1.08"
+    },
+    {
+      "formula": "table_rows[C].speedup_real",
+      "macro": "MetricRtlCgraOnlySpeedupReal",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "1.30"
+    },
+    {
+      "formula": "table_rows[C].cfg_cc / 100",
+      "macro": "MetricRtlCgraOnlyTimeUs",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "564.2"
+    },
+    {
+      "formula": "table_rows[C].energy_uj",
+      "macro": "MetricRtlCgraOnlyTotalEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "3.005"
+    },
+    {
+      "formula": "export policy constant CPU_TIME_MHZ",
+      "macro": "MetricRtlCpuClockMHz",
+      "notes": "Used for CPU-only time conversion and real-speedup interpretation.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "250"
+    },
+    {
+      "formula": "table_rows[CPU].cfg_cc",
+      "macro": "MetricRtlCpuOnlyCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "183{,}591"
+    },
+    {
+      "formula": "table_rows[CPU].energy_uj",
+      "macro": "MetricRtlCpuOnlyCpuEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "4.588"
+    },
+    {
+      "formula": "1000 / table_rows[CPU].energy_uj",
+      "macro": "MetricRtlCpuOnlyEEKpermPerJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "217.9"
+    },
+    {
+      "formula": "table_rows[CPU].speedup_real",
+      "macro": "MetricRtlCpuOnlySpeedupReal",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "1.00"
+    },
+    {
+      "formula": "table_rows[CPU].cfg_cc / 250",
+      "macro": "MetricRtlCpuOnlyTimeUs",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "734.4"
+    },
+    {
+      "formula": "table_rows[CPU].energy_uj",
+      "macro": "MetricRtlCpuOnlyTotalEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "4.588"
+    },
+    {
+      "formula": "metadata.cpu_power_mw",
+      "macro": "MetricRtlCpuPowerModelMW",
+      "notes": "Fixed CPU reference power model applied to active-cycle counts.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "2.5"
+    },
+    {
+      "formula": "table_rows[F].cfg_cc",
+      "macro": "MetricRtlHybridCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "67{,}717"
+    },
+    {
+      "formula": "table_rows[F].cgra_energy_uj",
+      "macro": "MetricRtlHybridCgraEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "1.390"
+    },
+    {
+      "formula": "table_rows[F].cpu_host_energy_uj",
+      "macro": "MetricRtlHybridCpuEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "0.021"
+    },
+    {
+      "formula": "1000 / table_rows[F].energy_uj",
+      "macro": "MetricRtlHybridEEKpermPerJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "708.6"
+    },
+    {
+      "formula": "table_rows[F].energy_reduction_pct",
+      "macro": "MetricRtlHybridEnergyReductionPct",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "69.2"
+    },
+    {
+      "formula": "table_rows[F].speedup_real",
+      "macro": "MetricRtlHybridSpeedupReal",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "1.08"
+    },
+    {
+      "formula": "table_rows[F].cfg_cc / 100",
+      "macro": "MetricRtlHybridTimeUs",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "677.2"
+    },
+    {
+      "formula": "table_rows[F].energy_uj",
+      "macro": "MetricRtlHybridTotalEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/bench_paper/poseidon2_rtl_winners.json",
+      "value": "1.411"
+    },
+    {
+      "formula": "summary[OpenEdgeDSL].n_cc_canonical",
+      "macro": "MetricSboxCastmCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "539"
+    },
+    {
+      "formula": "count(numeric header lines in instructions.csv)",
+      "macro": "MetricSboxCastmCsvBundleCount",
+      "notes": "Count of bundle header blocks in the CASTM-generated instructions.csv.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "73"
+    },
+    {
+      "formula": "max(int(line) for numeric header lines in instructions.csv)",
+      "macro": "MetricSboxCastmCsvLastBundleIndex",
+      "notes": "Bundle headers are zero-based, so the last visible header is an index, not the bundle count.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "72"
+    },
+    {
+      "formula": "len(instructions.csv.splitlines())",
+      "macro": "MetricSboxCastmCsvLines",
+      "notes": "Physical visible line count of the compiled CASTM CSV.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "365"
+    },
+    {
+      "formula": "100 * (1 - summary[OpenEdgeDSL].n_cc_canonical / summary[Manual-k7].n_cc_canonical)",
+      "macro": "MetricSboxCastmCycleReductionPct",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "20.5"
+    },
+    {
+      "formula": "summary[OpenEdgeDSL].dispatches_canonical",
+      "macro": "MetricSboxCastmDispatches",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "1"
+    },
+    {
+      "formula": "1000 * summary[OpenEdgeDSL].energy_uj_corrected_canonical",
+      "macro": "MetricSboxCastmEnergyNJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "4.65"
+    },
+    {
+      "formula": "summary[OpenEdgeDSL].energy_uj_corrected_canonical",
+      "macro": "MetricSboxCastmEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.005"
+    },
+    {
+      "formula": "100 * total_idle_slots / total_slots",
+      "macro": "MetricSboxCastmIdleArithmeticPct",
+      "notes": "Arithmetic idle ratio from per-bundle NOP counts in instructions.csv.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "60.0"
+    },
+    {
+      "formula": "100 * (exp(mean(log(idle_slots_per_bundle + 1))) - 1) / 16",
+      "macro": "MetricSboxCastmIdlePct",
+      "notes": "Bundle-level geometric mean idle ratio with +1 smoothing on idle-slot counts.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "41.7"
+    },
+    {
+      "formula": "count(numeric header lines in instructions.csv)",
+      "macro": "MetricSboxCastmKernelNB",
+      "notes": "Static bundle count of the compiled CASTM kernel.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "73"
+    },
+    {
+      "formula": "count(numeric header lines in instructions.csv)",
+      "macro": "MetricSboxCastmNB",
+      "notes": "CASTM number of bundles taken directly from the compiled instructions.csv.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/primitives/sbox_x7_mod/instructions.csv",
+      "value": "73"
+    },
+    {
+      "formula": "summary[OpenEdgeDSL].power_uw_corrected_canonical / 1000",
+      "macro": "MetricSboxCastmPowerMW",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.86"
+    },
+    {
+      "formula": "ops_profile_summary[OpenEdgeDSL].smul_pct",
+      "macro": "MetricSboxCastmSmulPct",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "4.1"
+    },
+    {
+      "formula": "summary[Manual-k7].n_cc_canonical / summary[OpenEdgeDSL].n_cc_canonical",
+      "macro": "MetricSboxCastmSpeedupVsManual",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "1.26"
+    },
+    {
+      "formula": "summary[Compigra-real-unified].n_cc_canonical",
+      "macro": "MetricSboxCompigraCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "3{,}544"
+    },
+    {
+      "formula": "count(numeric header lines in combined_sbox_x7_instructions.csv)",
+      "macro": "MetricSboxCompigraCsvBundleCount",
+      "notes": "Count of bundle header blocks in the combined Compigra schedule CSV.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/compigra/combined_sbox_x7_instructions.csv",
+      "value": "2{,}564"
+    },
+    {
+      "formula": "max(int(line) for numeric header lines in combined_sbox_x7_instructions.csv)",
+      "macro": "MetricSboxCompigraCsvLastBundleIndex",
+      "notes": "Bundle headers are zero-based, so the last visible header is an index, not the bundle count.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/compigra/combined_sbox_x7_instructions.csv",
+      "value": "2{,}563"
+    },
+    {
+      "formula": "len(combined_sbox_x7_instructions.csv.splitlines())",
+      "macro": "MetricSboxCompigraCsvLines",
+      "notes": "Physical visible line count of the combined Compigra CSV.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/compigra/combined_sbox_x7_instructions.csv",
+      "value": "12{,}820"
+    },
+    {
+      "formula": "summary[Compigra-real-unified].dispatches_canonical",
+      "macro": "MetricSboxCompigraDispatches",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "244"
+    },
+    {
+      "formula": "1000 * summary[Compigra-real-unified].energy_uj_corrected_canonical",
+      "macro": "MetricSboxCompigraEnergyNJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "26.69"
+    },
+    {
+      "formula": "summary[Compigra-real-unified].energy_uj_corrected_canonical",
+      "macro": "MetricSboxCompigraEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.027"
+    },
+    {
+      "formula": "100 * total_idle_slots / total_slots",
+      "macro": "MetricSboxCompigraIdleArithmeticPct",
+      "notes": "Arithmetic idle ratio from per-bundle NOP counts in instructions.csv.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/compigra/combined_sbox_x7_instructions.csv",
+      "value": "90.2"
+    },
+    {
+      "formula": "100 * (exp(mean(log(idle_slots_per_bundle + 1))) - 1) / 16",
+      "macro": "MetricSboxCompigraIdlePct",
+      "notes": "Bundle-level geometric mean idle ratio with +1 smoothing on idle-slot counts.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/compigra/combined_sbox_x7_instructions.csv",
+      "value": "89.9"
+    },
+    {
+      "formula": "summary[Compigra-real-unified].compiled_cycles_static",
+      "macro": "MetricSboxCompigraKernelNB",
+      "notes": "Static bundle count of the core Compigra kernel before expansion into the combined schedule CSV.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "21"
+    },
+    {
+      "formula": "count(numeric header lines in combined_sbox_x7_instructions.csv)",
+      "macro": "MetricSboxCompigraNB",
+      "notes": "Total compiled bundles in the combined Compigra schedule CSV.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/compigra/combined_sbox_x7_instructions.csv",
+      "value": "2{,}564"
+    },
+    {
+      "formula": "summary[Compigra-real-unified].power_uw_corrected_canonical / 1000",
+      "macro": "MetricSboxCompigraPowerMW",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.75"
+    },
+    {
+      "formula": "summary[Compigra-real-unified].n_cc_canonical / summary[OpenEdgeDSL].n_cc_canonical",
+      "macro": "MetricSboxCompigraSlowdownVsCastm",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "6.58"
+    },
+    {
+      "formula": "ops_profile_summary[Compigra-real-unified].smul_pct",
+      "macro": "MetricSboxCompigraSmulPct",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.0"
+    },
+    {
+      "formula": "summary[Manual-k7].n_cc_canonical",
+      "macro": "MetricSboxManualCC",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "678"
+    },
+    {
+      "formula": "count(numeric header lines in instructions.csv)",
+      "macro": "MetricSboxManualCsvBundleCount",
+      "notes": "Count of bundle header blocks in the manual CSV.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/manual/sbox_x7_k7/instructions.csv",
+      "value": "406"
+    },
+    {
+      "formula": "max(int(line) for numeric header lines in instructions.csv)",
+      "macro": "MetricSboxManualCsvLastBundleIndex",
+      "notes": "Bundle headers are zero-based, so the last visible header is an index, not the bundle count.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/manual/sbox_x7_k7/instructions.csv",
+      "value": "405"
+    },
+    {
+      "formula": "summary[Manual-k7].dispatches_canonical",
+      "macro": "MetricSboxManualDispatches",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "1"
+    },
+    {
+      "formula": "1000 * summary[Manual-k7].energy_uj_corrected_canonical",
+      "macro": "MetricSboxManualEnergyNJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "6.26"
+    },
+    {
+      "formula": "summary[Manual-k7].energy_uj_corrected_canonical",
+      "macro": "MetricSboxManualEnergyUJ",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.006"
+    },
+    {
+      "formula": "100 * total_idle_slots / total_slots",
+      "macro": "MetricSboxManualIdleArithmeticPct",
+      "notes": "Arithmetic idle ratio from per-bundle NOP counts in instructions.csv.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/manual/sbox_x7_k7/instructions.csv",
+      "value": "74.6"
+    },
+    {
+      "formula": "100 * (exp(mean(log(idle_slots_per_bundle + 1))) - 1) / 16",
+      "macro": "MetricSboxManualIdlePct",
+      "notes": "Bundle-level geometric mean idle ratio with +1 smoothing on idle-slot counts.",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/kernels/manual/sbox_x7_k7/instructions.csv",
+      "value": "64.3"
+    },
+    {
+      "formula": "summary[Manual-k7].compiled_cycles_static",
+      "macro": "MetricSboxManualKernelNB",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "406"
+    },
+    {
+      "formula": "summary[Manual-k7].compiled_cycles",
+      "macro": "MetricSboxManualNB",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "406"
+    },
+    {
+      "formula": "summary[Manual-k7].power_uw_corrected_canonical / 1000",
+      "macro": "MetricSboxManualPowerMW",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0.92"
+    },
+    {
+      "formula": "ops_profile_summary[Manual-k7].smul_pct",
+      "macro": "MetricSboxManualSmulPct",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "2.5"
+    },
+    {
+      "formula": "mismatch_count",
+      "macro": "MetricValidationEdslMismatches",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cfgc_validation/edsl_vs_c_python_104_v1.json",
+      "value": "0"
+    },
+    {
+      "formula": "total_vectors",
+      "macro": "MetricValidationEdslVectors",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/cfgc_validation/edsl_vs_c_python_104_v1.json",
+      "value": "104"
+    },
+    {
+      "formula": "common summary[*].mismatches across Manual-k7/Compigra-real-unified/OpenEdgeDSL",
+      "macro": "MetricValidationSboxMismatches",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "0"
+    },
+    {
+      "formula": "common summary[*].vectors across Manual-k7/Compigra-real-unified/OpenEdgeDSL",
+      "macro": "MetricValidationSboxVectors",
+      "notes": "",
+      "source": "/Users/ccampos/UMA/ZKP/cgra-thesis-workspace/submodules/poseidon2/outputs/sbox_compare_fast_paper/sbox_compare_summary.json",
+      "value": "25"
+    }
+  ]
+}

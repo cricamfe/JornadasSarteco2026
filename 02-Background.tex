@@ -1,126 +1,98 @@
 %!TEX root = main.tex
-\section{Cómo usar el fichero Jornadas.cls}
+\section{Background and Related Work}
+\label{sec:background}
 
-La hoja de estilo está diseñada de forma que se pueden usar las etiquetas
-habituales de la hoja de estilo {\tt article}, introduciendo sólo unas pequeñas
-modificaciones. Sugerimos a los autores que tomen el fichero {\tt ejemplo.tex}
-con el que se ha generado este documento, como plantilla para sus propios
-trabajos, conservando en todo lo posible las definiciones, márgenes y
-declaraciones que definen tanto la Hoja de Estilo como la propia plantilla. Una
-buena idea es comprobar el efecto que tienen las distintas órdenes incluidas en
-el fichero fuente de \LaTeX{} ({\tt ejemplo.tex}) sobre la apariencia final del
-documento en formato PDF ({\tt ejemplo.pdf}).
+\subsection{OpenEdgeCGRA Architecture}
+\label{subsec:cgra-basics}
 
-Primero, para seleccionar la hoja de estilo se debe escribir la siguiente orden
-\begin{center}
-\verb+\documentclass[twocolumn,twoside]{Jornadas}+
-\end{center}
+Coarse Grained Reconfigurable Arrays (CGRAs) are primarily composed of an array of interconnected
+PEs (or Reconfigurable Cells --RCs--) that can be configured dynamically to implement a variety of computational tasks. The PEs are connected through a fixed interconnect, executing in lockstep under a configuration bitstream loaded before kernel execution~\cite{cgra-survey}. Each PE contains a word-width ALU, a small register file, and neighbor connections. Unlike FPGAs (bit-level reconfiguration, high overhead), CGRAs reconfigure at the instruction level with microsecond latency.
 
-Esta hoja de estilo no permite incluir las filiaciones de los autores justo
-debajo de sus nombres. Esta información se incluirá en notas al pie de la
-primera página mediante el uso de la orden \verb+\thanks{...}+. Tal y como puede
-verse en este documento de ejemplo, se ha asociado una orden a cada uno de los
-autores. Esto da lugar a la inclusión de una nota al pie por cada uno de ellos.
-Los agradecimientos a proyectos deben incluirse en la sección final del
-artículo.
+OpenEdgeCGRA~\cite{openedge-cgra} provides: \textit{(i)} a $4\times4$ toroidal mesh of PEs (i.e 16 PEs),  where column~3 wraps to column~0 and row~3 to row~0, giving maximum distance of 4 hops between any two PEs; \textit{(ii)} per-PE resources including a 32-bit ALU (1~clock cycle), $32\!\times\!32$ multiplier (3~clock cycles), four registers (R0--R3), output register ROUT visible to neighbors, and branchless select instructions (BSFA/BZFA); \textit{(iii)} shared scratchpad SRAM with 2-cycle latency (one access/column/cycle) organized as 4 interleaved banks; and \textit{(iv)} tight coupling with a RISC-V host core (X-HEEP~\cite{xheep}). At SoC level, we consider two host-to-memory organizations. The simpler one-to-many path (\textit{OneToM}) forces host and accelerator traffic to share a common route to memory, whereas the richer \textit{N:M} crossbar sustains more parallel access to the interleaved SRAM banks. As a result, \textit{OneToM} incurs more serialization and contention, while \textit{N:M} reduces memory-induced stalls.
 
-El primer párrafo del artículo debe iniciarse con la orden
-``\verb+\PARstart{X}{YYY} ZZZ+''. Esta orden produce una letra grande \verb+X+
-al principio de un párrafo. La cadena \verb+YYY+ se cambiará automáticamente a
-letras mayúsculas.
+\textbf{Configuration and execution model.} A kernel is encoded as a sequence of 32-bit \emph{configuration words}---one per PE per cycle---stored in a Configuration Register File (CRF) with $D$ entries per column---32 entries in our baseline CGRA. Before dispatch, the host CPU writes configuration words into an SRAM backing store called the \emph{Context Memory} (CMEM) via memory-mapped I/O (MMIO). During execution, each column's program counter advances through CRF entries in lockstep, dispatching one instruction per PE. When a kernel exceeds the CRF capacity, the host must reload the CMEM with the next batch of instructions before the CGRA can resume---a transparent but costly operation whose implications are analyzed in Section~\ref{subsec:creg-analysis}.
 
-La hoja de estilo de bibliografía {\tt Jornadas.bst} permite que el programa
-\BibTeX\ incluya las referencias bibliográficas de acuerdo con el formato usado
-en las actas.
+\subsection{CGRA Programming: Limitations for ZKP Workloads}
+\label{subsec:cgra-programming}
 
-En la figura~\ref{fig:programa} podemos ver la estructura de definición de un
-artículo usando la hoja de estilo {\tt Jornadas.cls}. 
- 
-Los artículos sometidos a las Jornadas no deben contener ni cabeceras ni números
-de página. Ambos elementos serán incluidos por la organización durante el
-proceso de generación de las actas completas. Las órdenes \verb+\markboth{}{}+,
-\verb+\pagestyle{empty}+ y \verb+\thispagestyle{empty}+ han sido añadidas al
-ejemplo para ocultar tanto las cabeceras como los números de todas las páginas. 
+\textbf{Manual scheduling} requires placing instructions among $NB$ bundles of PEs slots,
+satisfying data dependencies, multi-cycle latencies, memory-port arbitration, and register pressure---producing CSV files of $\sim$4{,}750 lines for our main kernel, with errors detectable only through simulation.
 
-Los comentarios de las tablas deben definirse encima de las mismas, mientras que
-los comentarios de las figuras se deben colocar debajo.
+\noindent \textbf{Automatic compilers} (Compigra~\cite{compigra}, Wang et al.~\cite{wang2025mlir}) accept C code and use heuristic placement, working well for regular DSP kernels but encountering structural limitations for cryptographic modular arithmetic (our use case): (1)~multi-precision limb decomposition is invisible at the C level; (2)~toroidal routing patterns have no C-level representation; (3)~architectural primitives like BSFA (\textit{Branch/Select on Flag A}, a branchless correction needed in our main kernel) are inaccessible; and (4)~heuristic scheduling forfeits cycle-count predictability needed for real-time ZKP functions.
 
-\begin{figure}[htb] 
-\begin{center} 
-  \includegraphics[width=7.5cm]{figura.pdf}
-\end{center} 
-\caption{Los comentarios de las figuras van debajo.} 
-\label{fig:curva} 
-\end{figure} 
+\subsection{Poseidon2 S-box Exponentiation}
+\label{subsec:poseidon2}
 
-Si quieres poner varias sub-figuras dentro de una misma figura, puedes usar el
-paquete \verb+subfig+, como en la Fig.\ref{fig:subfig} (incluye Figs.~\ref{subfig:a} y \ref{subfig:b}).
+Poseidon2~\cite{poseidon2} is a ZKP-friendly hash function engineered to minimize finite-field multiplications per permutation, since each multiplication translates directly to proof-generation cost. Fig.~\ref{fig:poseidon2-structure} shows its round structure: it operates on a state $s = (s_0, s_1, s_2, \ldots, s_{t-1})$ of $t$ field elements through $R_F/2$ full rounds, then a $R_P$ partial round for cell $s_0$, and next $R_F/2$ full rounds again on $s$. Each round applies a S-box layer ($x \mapsto x^d \bmod p$), a linear {\textit Maximum Distance Separable} layer (MDS, a $t \times t$ matrix used to provide maximum diffusion), and a round-constant addition ($+c_i$, a standard feature to ensure each round behaves differently).
+For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon2 invokes $8 \times 16 + 13 = 141$ S-box evaluations, making the S-box layer over 90\% of total computation on a 32-bit CGRA.
 
-\begin{figure}[ht]
-    \centering
-    \subfloat[Logo Sarteco]{\label{subfig:a}
-    \includegraphics[width=0.4\linewidth]{Sarteco}%
-    }
-    \hfill
-    \subfloat[Logo Jornadas]{\label{subfig:b}
-    \includegraphics[width=0.4\linewidth]{Jornadas}%
-    }
-    \caption{Algunos logos.}
-    \label{fig:subfig}
-    \end{figure}
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw, thick, minimum height=0.6cm, minimum width=1.0cm, font=\scriptsize\sffamily, rounded corners=2pt},
+    sbox/.style={box, fill=cgrared!15},
+    mds/.style={box, fill=cgrablue!15},
+    rc/.style={box, fill=cgragreen!15},
+    arr/.style={-{Stealth[length=3pt]}, thick},
+    lbl/.style={font=\footnotesize\sffamily, cgragray},
+]
+\node[font=\scriptsize\sffamily] (inp) at (0,0) {state};
+\node[sbox, right=0.4cm of inp] (sb1) {S-box};
+\node[lbl, above=0.02cm of sb1] {$\forall s_i$};
+\node[mds, right=0.2cm of sb1] (m1) {MDS};
+\node[rc, right=0.2cm of m1] (r1) {$+c_i$};
+\draw[arr] (inp) -- (sb1); \draw[arr] (sb1) -- (m1); \draw[arr] (m1) -- (r1);
+\node[font=\footnotesize\sffamily\bfseries, above=0.25cm of m1] {Full ($\times R_F/2$)};
 
-\begin{table}[htb]
-\caption{Ejemplo de tabla. El comentario se sitúa al comienzo de la
-definición de la tabla.}
-\begin{center}
-{\footnotesize
-\begin{tabular}{|c||c|c|}\hline
-N. Proc. & t  & e   \\\hline\hline
-10       & 50 & 0.5 \\\hline
-20       & 25 & 0.7 \\\hline
-\end{tabular}
+\node[sbox, right=0.5cm of r1] (sb2) {S-box};
+\node[lbl, above=0.02cm of sb2] {$s_0$};
+\node[mds, right=0.2cm of sb2] (m2) {MDS};
+\node[rc, right=0.2cm of m2] (r2) {$+c_i$};
+\draw[arr] (r1) -- node[above, lbl] {$\cdots$} (sb2); \draw[arr] (sb2) -- (m2); \draw[arr] (m2) -- (r2);
+\node[font=\footnotesize\sffamily\bfseries, above=0.25cm of m2] {Partial ($\times R_P$)};
+
+\node[sbox, right=0.5cm of r2] (sb3) {S-box};
+\node[lbl, above=0.02cm of sb3] {$\forall s_i$};
+\node[mds, right=0.2cm of sb3] (m3) {MDS};
+\node[font=\scriptsize\sffamily, right=0.3cm of m3] (out) {out};
+\draw[arr] (r2) -- node[above, lbl] {$\cdots$} (sb3); \draw[arr] (sb3) -- (m3); \draw[arr] (m3) -- (out);
+\node[font=\footnotesize\sffamily\bfseries, above=0.25cm of m3] {Full ($\times R_F/2$)};
+\end{tikzpicture}%
 }
-\end{center}
+\caption{Poseidon2 permutation structure. The S-box ($x^d \bmod p$) dominates cost.}
+\label{fig:poseidon2-structure}
+\end{figure}
+
+\subsection{Related Work}
+\label{subsec:related-hw}
+
+Table~\ref{tab:related-work} positions our contribution relative to existing ZKP hardware accelerators.
+PipeZK~\cite{pipezk} proposes an ASIC pipeline for MSM (\textit{Multi-Scalar Multiplication}) and NTT (\textit{Number Theoretic Transform}), which
+are the two most time-consuming computational primitives for generating Zero-Knowledge Proofs (zk-SNARKs), but it does not address ZK-friendly hashing. AMAZE~\cite{amaze} implements MiMC (a ZK-friendly hash function) on FPGA with fixed RTL, achieving $13\times$ over CPU. HashEmAll~\cite{hashemall} provides FPGA-optimized cores for Rescue-Prime, Griffin, and Reinforced Concrete (up to $23\times$ over CPU on BN254), yet it targets different hash families than Poseidon2. TRIDENT~\cite{trident} accelerates the original Poseidon~\cite{poseidon} on FPGA for BLS12-381 (Filecoin).
+
+Although FPGAs are inherently reprogrammable platforms, the accelerators listed above implement their arithmetic pipelines as fixed RTL designs optimized for a specific prime field and hash function. Adapting them to a different field (e.g., from BLS12-381 to BabyBear) or a different hash (e.g., from MiMC to Poseidon2) would require modifying the HDL source, re-running synthesis and place-and-route, and generating a new bitstream---a process that takes minutes to hours and demands hardware design expertise. A CGRA operates at a different abstraction level: the hardware (ALUs, registers, interconnect) remains fixed, and switching to a new kernel amounts to loading a new instruction configuration via DMA, completing in microseconds with no hardware re-synthesis. This distinction is particularly relevant for wearable ZKP devices, where the proof system may evolve (new field, new exponent, new hash) and the device must adapt through a software update rather than FPGA re-flashing.
+
+Separately, on the CGRA programming side, efficient CGRA compilers must support both spatially configured and time-multiplexed tasks. Compigra~\cite{compigra} and Wang et al.~\cite{wang2025mlir} provide automatic C-to-CGRA compilation tools that represent the state-of-the-art and consider some of the mentioned spatial-temporal challenges. However, they target general-purpose kernels and lack mechanisms for multi-precision spatial arithmetic, toroidal routing, or branchless correction---features essential for ZKP workloads.
+
+To our knowledge, no prior work has mapped Poseidon2 hash function onto a CGRA, designed an API for spatial-temporal cryptographic programming, or analyzed Configuration Register File capacity pressure for ZKP-class workloads.
+
+\begin{table}[t]
+\caption{Comparison with related ZKP hardware accelerators.
+The ``Reprog.'' column reflects the cost of switching to a different hash or field.}
+\label{tab:related-work}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Work} & \textbf{Platf.} & \textbf{Primitive} & \textbf{Field} & \textbf{Reprog.} \\
+\midrule
+PipeZK~\cite{pipezk} & ASIC & MSM+NTT & BN254 & Fabr. \\
+AMAZE~\cite{amaze} & FPGA & MiMC & BN254 & RTL \\
+HashEmAll~\cite{hashemall} & FPGA & Resc./Griff. & BN254 & RTL \\
+TRIDENT~\cite{trident} & FPGA & Poseidon & BLS12 & RTL \\
+\textbf{This work} & \textbf{CGRA} & \textbf{Poseidon2} & \textbf{BabyB.} & \textbf{DMA} \\
+\bottomrule
+\end{tabular}
 \end{table}
-
-Incluya sus figuras preferiblemente usando ficheros en formato {\tt .pdf} en
-blanco y negro o tonos de gris (el fondo debe ser siempre blanco). 
-
-\begin{figure*}[!t]
-    \centering
-    \begin{minipage}{0.9\linewidth}
-    {\footnotesize
-    \begin{lstlisting}[language=Python]
-def XCM2(events):
-    n_events = len(events) (*@\label{lin:xcm-a}@*)
-
-    Corr_max = zeros((n_events,n_events))
-    Lag_max = zeros((n_events,n_events))
-    Corr_min = zeros((n_events,n_events))
-    Lag_min = zeros((n_events,n_events))(*@\label{lin:xcm-b}@*)
-
-    for i in range(n_events):(*@\label{lin:xcm-i}@*)
-        for j in range(i, n_events):
-            xcorrij = xcorr(events[i], events[j], 250, full_xcorr=True) (*@\label{lin:xcm-c}@*)
-            #Returns index and CC[i] for max(abs(CC[i])) --including negative values--
-            Lag_min[i,j] = xcorrij[0](*@\label{lin:xcm-d}@*)
-            Corr_min[i,j] = xcorrij[1]
-            if xcorrij[1]<0.:
-                #Return highest positive CC[i] and index (xcorrij[2] contains CC)
-                Lag_max[i,j], Corr_max[i,j] = xcorr_max(xcorrij[2],abs_max=False)
-            else:
-                Lag_max[i,j] = xcorrij[0]
-                Corr_max[i,j] = xcorrij[1](*@\label{lin:xcm-e}@*)
-
-    return Corr_max, Lag_max, Corr_min, Lag_min
-    \end{lstlisting}
-    }
-    \end{minipage}
-    \caption{Código de ejemplo en python.}
-    \label{fig:originalCode}
-    \end{figure*}
-
-En la Figura~\ref{fig:originalCode} se muestra un ejemplo de uso de \verb+\lstlisting+ para insertar un bloque de código. En este ejemplo el código es Python, pero se puede cambiar el ``Syntax Highlighting'' cambiando el argumento \verb+language+, por ejemplo \verb+[language=C]+. Puedes hacer referencia a las líneas de código etiquetadas con \verb+(*@\label{lin:tu-etiqueta}@*)+, como por ejemplo las líneas~\ref{lin:xcm-a}-\ref{lin:xcm-b} del código.
-
-
-

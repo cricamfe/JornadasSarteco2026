@@ -1,0 +1,147 @@
+% Barrett modular reduction pipeline — 4-stage CGRA mapping
+% Included from 03_openedge.tex via \input
+\begin{figure}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=Stealth, font=\sffamily]
+
+\def\boxW{4.9}
+%\def\boxH{4.6}
+\def\boxH{6.0}
+\def\gap{0.4}
+
+% \def\barrettbox#1#2#3#4#5#6#7{
+%     \begin{scope}[shift={(#1*\boxW + #1*\gap, 0)}]
+%     \node[draw=cgragray, thick, rounded corners=3pt, fill=white,
+%           minimum width=\boxW cm, minimum height=\boxH cm, anchor=north west]
+%           at (0,0) {};
+%     \fill[cgralight, rounded corners=3pt] (0.02, -0.02) rectangle (\boxW-0.02, -1.6);
+%     \fill[cgralight] (0.02, -1.4) rectangle (\boxW-0.02, -1.6);
+%     \draw[cgragray, thick, densely dashed] (0.15, -1.6) -- (\boxW-0.15, -1.6);
+%     \node[anchor=north, font=\bfseries\fontsize{8}{9.5}\selectfont, text=cgrablue,
+%           text width=\boxW cm - 0.2cm, align=center]
+%           at (\boxW/2, -0.15) {#2};
+%     \node[anchor=north, font=\fontsize{8}{9.5}\selectfont, align=center,
+%           text width=\boxW cm - 0.2cm, text=black]
+%           at (\boxW/2, -0.65) {#3};
+%     \node[anchor=north, font=\bfseries\fontsize{7.5}{9}\selectfont, text=cgrared,
+%           align=center, text width=\boxW cm - 0.2cm]
+%           at (\boxW/2, -1.8) {#4};
+%     \node[anchor=north, font=\fontsize{7}{8.5}\selectfont, align=center,
+%           text width=\boxW cm - 0.4cm, text=black!85]
+%           at (\boxW/2, -2.15) {#5};
+%     \fill[codebg, rounded corners=2pt, draw=black!10]
+%         (0.15, -3.3) rectangle (\boxW-0.15, -4.45);
+%     \node[anchor=south east, font=\sffamily\bfseries\fontsize{5.5}{6}\selectfont,
+%           text=cgrablue!90!black, fill=cgralight, rounded corners=2pt,
+%           inner xsep=4pt, inner ysep=2pt, draw=cgragray!70]
+%           at (\boxW+0.2, -4.7) {Map $\rightarrow$ \texttt{#7}};
+%     \node[anchor=north west, font=\ttfamily\fontsize{6.5}{8}\selectfont, align=left,
+%           text width=\boxW cm - 0.5cm, text=cgragreen!70!black]
+%           at (0.25, -3.45) {#6};
+%     \coordinate (EAST#1) at (\boxW, -\boxH/2);
+%     \coordinate (WEST#1) at (0, -\boxH/2);
+%     \end{scope}
+% }
+
+\def\barrettbox#1#2#3#4#5#6#7{
+    \begin{scope}[shift={(#1*\boxW + #1*\gap, 0)}]
+    % 1. Aumentamos la altura visual de la caja si es necesario (ajusta \boxH en tus definiciones)
+    \node[draw=cgragray, thick, rounded corners=3pt, fill=white,
+          minimum width=\boxW cm, minimum height=\boxH cm, anchor=north west]
+          at (0,0) {};
+          
+    % 2. Ajustamos el sombreado superior para que cubra el nuevo tamaño del título
+    \fill[cgralight, rounded corners=3pt] (0.02, -0.02) rectangle (\boxW-0.02, -1.8);
+    \fill[cgralight] (0.02, -1.6) rectangle (\boxW-0.02, -1.8);
+    \draw[cgragray, thick, densely dashed] (0.15, -1.8) -- (\boxW-0.15, -1.8);
+    
+    % Título: Bajamos un poco el inicio (-0.15 -> -0.2)
+    \node[anchor=north, font=\bfseries\fontsize{10}{12}\selectfont, text=cgrablue,
+          text width=\boxW cm - 0.2cm, align=center]
+          at (\boxW/2, -0.2) {#2};
+          
+    % Subtítulo: Bajamos la posición para que no toque al título (-0.65 -> -0.85)
+    \node[anchor=north, font=\fontsize{10}{12}\selectfont, align=center,
+          text width=\boxW cm - 0.2cm, text=black]
+          at (\boxW/2, -0.85) {#3};
+          
+    % Texto Rojo: Bajamos la posición (-1.8 -> -2.1)
+    \node[anchor=north, font=\bfseries\fontsize{9}{11}\selectfont, text=cgrared,
+          align=center, text width=\boxW cm - 0.2cm]
+          at (\boxW/2, -2.1) {#4};
+          
+    % Descripción inferior: Bajamos la posición (-2.15 -> -2.55)
+    \node[anchor=north, font=\fontsize{8.5}{10}\selectfont, align=center,
+          text width=\boxW cm - 0.4cm, text=black!85]
+          at (\boxW/2, -2.55) {#5};
+          
+    % Bloque de Código: Lo desplazamos más abajo para que no choque con la descripción (-3.3 -> -3.8)
+    \fill[codebg, rounded corners=2pt, draw=black!10]
+        (0.15, -4) rectangle (\boxW-0.15, -6.2);
+        
+    \node[anchor=north east, font=\sffamily\bfseries\fontsize{7.5}{9}\selectfont,
+          text=cgrablue!90!black, fill=cgralight, rounded corners=2pt,
+          inner xsep=5pt, inner ysep=3pt, draw=cgragray!70]
+          at (\boxW-0.15, -6.2) {Map $\rightarrow$ \texttt{#7}};
+          
+          
+    % Texto del código: Ajustamos acorde al nuevo rectángulo (-3.45 -> -3.95)
+    \node[anchor=north west, font=\ttfamily\fontsize{8}{10}\selectfont, align=left,
+          text width=\boxW cm - 0.5cm, text=cgragreen!70!black]
+          at (0.25, -3.95) {#6};
+          
+    \coordinate (EAST#1) at (\boxW, -\boxH/2);
+    \coordinate (WEST#1) at (0, -\boxH/2);
+    \end{scope}
+}
+
+\barrettbox{0}
+    {Step 1: Base Product}
+    {$w \leftarrow x_1 \times x_2$}
+    {SPATIAL UNROLLING}
+    {16 PEs evaluate all partial products concurrently in one clock bundle.}
+    {\textcolor{cgragray}{// subrC (square): 1 bundle}\\[0.4ex]
+     bundle \{ at all: R2 = R0 * R1; \}\\[0.4ex]
+     \textcolor{cgragray}{// subrB: same, + separate loads}}
+    {subrC / subrB}
+
+\barrettbox{1}
+    {Steps 2 \& 3: Estimation}
+    {$t \leftarrow (w \gg (n{-}1)) \cdot z$\\[0.4ex]$u \leftarrow (t \gg (n{+}1)) \cdot p$}
+    {MESH ROUTING}
+    {Inter-PE data movement via neighbor registers (RCR, RCB). Shifts as single-bundle ALU ops.}
+    {\textcolor{cgragray}{// Quotient estim.: 12 PEs}\\[0.6ex]
+     bundle \{ at @0..2,0..3: R2 = R0 * R1; \}}
+    {subrA}
+
+\barrettbox{2}
+    {Step 4: Mod Subtraction}
+    {$(w \bmod 2^{n+1}) - (u \bmod 2^{n+1})$}
+    %{EXPLICIT TRUNCATION}
+    {EXPL. TRUNCATION}
+    {Modulo $2^{n+1}$ via single-bundle AND masking (\texttt{R3 = R3 \& R2}). No division required.}
+    {\textcolor{cgragray}{// \dots (carry propagation,}\\[0.6ex]
+     \textcolor{cgragray}{// \phantom{\dots }normalization)}}
+    {subrA}
+
+\barrettbox{3}
+    {Steps 5 \& 6: Correction}
+    {$\mathbf{if}\ y > p\ \mathbf{then}\ y \leftarrow y - p$}
+    {HW PREDICATION}
+    {Branches stall pipelines. Executed via 1-bundle branchless multiplexer.}
+    {\textcolor{cgragray}{// Branchless correction:}\\[0.4ex]
+     bundle \{ @0,0: R2 = R0 - RCL; \}\\[0.4ex]
+     bundle \{ @0,0: BSFA R3\dots \}}
+    {subrA}
+
+\foreach \i [evaluate=\i as \next using int(\i+1)] in {0,1,2} {
+    \draw[-{Stealth[length=6pt, width=5pt]}, very thick, draw=cgrablue!80!black]
+        ([xshift=0.05cm]EAST\i) -- ([xshift=-0.05cm]WEST\next);
+}
+
+\end{tikzpicture}%
+}
+\caption{Barrett modular multiplication mapped onto the CGRA. Each box shows the mathematical operation (top), hardware strategy (middle), and \castm{} code excerpt (bottom).}
+\label{fig:barrett-structure}
+\end{figure}

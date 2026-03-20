@@ -1,0 +1,69 @@
+% Manual paper metrics without a stable machine-readable upstream source.
+% Keep this file small: only values that cannot yet be derived from the
+% canonical research artifacts should live here.
+% Maintenance guide: METRICS.md
+% Do not duplicate values already exported into generated/paper_metrics_auto.tex.
+
+% Intro / walkthrough
+\newcommand{\MetricSboxKernelManualAuthoringTime}{two weeks}
+\newcommand{\MetricSboxKernelComputeCC}{205}
+\newcommand{\MetricSboxKernelBarrettSharePct}{76}
+\newcommand{\MetricSboxKernelSubrABundles}{39}
+\newcommand{\MetricSboxKernelSubrACalls}{4}
+\newcommand{\MetricSboxKernelSharedBundlesSaved}{156}
+\newcommand{\MetricSboxKernelApproxPreReuseBundles}{700}
+\newcommand{\MetricSboxKernelResidentBundles}{73}
+
+% CRF sizing study — depths and hardware cost
+\newcommand{\MetricCrfDefaultDepth}{32}
+\newcommand{\MetricCrfDepthSixtyFour}{64}
+\newcommand{\MetricCrfDepthOneTwentyEight}{128}
+\newcommand{\MetricCrfDepthTwoFiftySix}{256}
+\newcommand{\MetricCrfDepthFullFit}{512}
+
+\newcommand{\MetricCrfSixtyFourExtraFlipFlops}{16{,}384}
+\newcommand{\MetricCrfOneTwentyEightExtraFlipFlops}{49{,}152}
+\newcommand{\MetricCrfTwoFiftySixExtraFlipFlops}{114{,}688}
+\newcommand{\MetricCrfFullFitExtraFlipFlops}{245{,}760}
+
+\newcommand{\MetricCrfSixtyFourAreaPct}{0.3}
+\newcommand{\MetricCrfOneTwentyEightAreaPct}{0.9}
+\newcommand{\MetricCrfTwoFiftySixAreaPct}{2.1}
+\newcommand{\MetricCrfFullFitAreaPct}{4.5}
+
+% CRF overhead — Manual kernel (406 NB, 678 CC exec, flat/partitionable)
+% Model: OH = CONF + FSM + set_kernel + CMEM_reload (RTL-traced)
+\newcommand{\MetricCrfManualDefaultK}{13}
+\newcommand{\MetricCrfManualDefaultOH}{6{,}770}
+\newcommand{\MetricCrfManualDefaultTotal}{7{,}448}
+\newcommand{\MetricCrfManualDefaultOHPct}{91}
+\newcommand{\MetricCrfManualSixtyFourK}{7}
+\newcommand{\MetricCrfManualSixtyFourOH}{6{,}612}
+\newcommand{\MetricCrfManualSixtyFourTotal}{7{,}290}
+\newcommand{\MetricCrfManualSixtyFourOHPct}{91}
+\newcommand{\MetricCrfManualOneTwentyEightK}{4}
+\newcommand{\MetricCrfManualOneTwentyEightOH}{6{,}485}
+\newcommand{\MetricCrfManualOneTwentyEightTotal}{7{,}163}
+\newcommand{\MetricCrfManualOneTwentyEightOHPct}{91}
+\newcommand{\MetricCrfManualTwoFiftySixK}{2}
+\newcommand{\MetricCrfManualTwoFiftySixOH}{4{,}267}
+\newcommand{\MetricCrfManualTwoFiftySixTotal}{4{,}945}
+\newcommand{\MetricCrfManualTwoFiftySixOHPct}{86}
+\newcommand{\MetricCrfManualFullFitK}{1}
+\newcommand{\MetricCrfManualFullFitOH}{0}
+\newcommand{\MetricCrfManualFullFitTotal}{678}
+\newcommand{\MetricCrfManualFullFitOHPct}{0}
+
+% CRF overhead — CASTM kernel (73 NB, 539 CC exec, jump-reuse/non-partitionable)
+\newcommand{\MetricCrfCastmDefaultK}{3}
+\newcommand{\MetricCrfCastmDefaultOH}{1{,}107}
+\newcommand{\MetricCrfCastmDefaultTotal}{1{,}646}
+\newcommand{\MetricCrfCastmDefaultOHPct}{67}
+\newcommand{\MetricCrfCastmSixtyFourK}{2}
+\newcommand{\MetricCrfCastmSixtyFourOH}{1{,}054}
+\newcommand{\MetricCrfCastmSixtyFourTotal}{1{,}593}
+\newcommand{\MetricCrfCastmSixtyFourOHPct}{66}
+\newcommand{\MetricCrfCastmOneTwentyEightK}{1}
+\newcommand{\MetricCrfCastmOneTwentyEightOH}{0}
+\newcommand{\MetricCrfCastmOneTwentyEightTotal}{539}
+\newcommand{\MetricCrfCastmOneTwentyEightOHPct}{0}

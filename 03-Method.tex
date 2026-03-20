@@ -1,16 +1,157 @@
 %!TEX root = main.tex
-\section{Problemas de espacio}
+\section{The CASTM API}
+\label{sec:openedge}
 
-Se recomienda a los autores que usen la Hoja de Estilo {\tt Jornadas.cls} que
-revisen con cuidado aquellos detalles más susceptibles de generar errores al
-procesar con \LaTeX, especialmente en lo que se refiere a mensajes del tipo
-``underfull hbox'' u ``overfull hbox'' (o vbox). Éstos vienen casi siempre
-unidos a problemas para ajustar texto u otros elementos como figuras o tablas a
-la anchura y/o altura de columna de la Hoja de Estilo. La salida del proceso
-\LaTeX{} le indicará la causa del problema y un número de línea aproximado del
-fichero fuente en la que se ha podido producir.
+\castm{}\footnote{Available at \url{https://github.com/PhDCristian/CASTM}}, can be seen as a deterministic C-like Domain Specific Language (DSL) whose design principle is \emph{explicit spatial-temporal control with structured abstraction}: the programmer specifies what executes on which PE at which cycle, but through high-level constructs instead of raw encodings.
 
-En cualquier caso, no intente cambiar las definiciones de márgenes de la Hoja de
-Estilo o de la plantilla de ejemplo para resolver los problemas de ajuste de
-espacio. Intente alguna otra alternativa y si no resuelve el problema, consulte
-con nuestra dirección de soporte para autores: {\tt js@jornadassarteco.org}.
+\subsection{API Design}
+\label{subsec:lang-overview}
+
+A \castm{} program declares a \emph{target profile}, a \emph{build configuration}, and one or more \emph{kernel} definitions. Table~\ref{tab:openedge-constructs} organizes the constructs into three layers: spatial-temporal statements (instruction placement), structured abstractions (functions, loops, labels), and architecture-aware operators for modular arithmetic idioms.
+
+\begin{table}[hbt]
+\caption{\castm{} API constructs by abstraction layer.}
+\label{tab:openedge-constructs}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}llp{3.2cm}@{}}
+\toprule
+\textbf{Layer} & \textbf{Construct} & \textbf{Semantics} \\
+\midrule
+\multirow{7}{*}{\parbox{1.2cm}{Spatial-\\temporal\\statem.}}
+ & \texttt{bundle \{\ldots\}} & Group instr.\ into one bundle \\
+ & \texttt{@r,c: instr;} & Single-PE at (row, col) \\
+ & \texttt{at @r..r,c..c:} & Range across PE sub-grid \\
+ & \texttt{at all: instr;} & Broadcast to all PEs \\
+ & \texttt{R0 = R1 + R2;} & C-like expr.\ $\to$ ALU op \\
+ & \texttt{LWI/SWI R0, 40;} & Mem load/store (13-bit) \\
+ & \texttt{BSFA R3,R0,R2;} & Branchless select \\
+\midrule
+\multirow{3}{*}{\parbox{1.2cm}{Struct.\\abstr.}}
+ & \texttt{function f(a,b)} & Parametric macro \\
+ & \texttt{for c in range(N)} & For loop \\
+ & \texttt{goto label/R3;} & Direct/indirect jump \\
+\midrule
+\multirow{5}{*}{\parbox{1.2cm}{Arch.-\\aware\\oper.}}
+ & \texttt{extract\_bytes} & Byte extraction \\
+ & \texttt{carry\_chain} & Multi-limb carry prop. \\
+ & \texttt{broadcast} & Wave to all PEs \\
+ & \texttt{normalize} & Limb norm.\ + carry \\
+ & \texttt{reduce} & Collective accumul. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \emph{spatial-temporal statements} layer provides direct control over instruction placement: every statement maps one-to-one to a CSV entry.
+The \emph{structured abstractions} layer reduces repetition without scheduling opacity: \texttt{function} expands the function body at the call site by default (parametric macro expansion)  but can be compiled to shared subroutines under the \texttt{jump-reuse}  expansion mode, which emits each function body once and links calls through a register-based return convention.
+The \emph{architecture-aware operators} layer encapsulates multi-instruction CGRA idioms for modular arithmetic, each expanding to a fixed, documented sequence.
+
+To illustrate the contrast with manual CSV, consider broadcasting a memory load to all 16 PEs. In CSV, this requires 16 identical entries per cycle (each encoding opcode, mux selects, register indices, and immediate as 7 numeric fields): \fbox{\texttt{29,0,0,0,1,0,0}} repeated 16 times. In \castm{}, the same operation is \mbox{\texttt{bundle \{ at all: LWI R0, 0; \}}} --a single line that the compiler expands to 16 entries, eliminating an entire class of copy-paste errors--.
+
+\subsection{Compilation Pipeline}
+\label{subsec:pipeline}
+
+The compiler performs a four-stage deterministic pipeline:
+\textbf{Parse} (tokenize, syntax validate) $\to$ \textbf{Analyze} (semantic checks, function expansion, constant resolution) $\to$ \textbf{Lower} (operator expansion, loop, flat IR generation) $\to$ \textbf{Emit} (per-PE CSV encoding). Each stage is a pure transformation with no heuristic decisions. The compiler rejects ambiguous scheduling (e.g., two instructions on the same PE in the same cycle) with diagnostics reporting source location, PE coordinate, and cycle number.
+
+\castm{} combines three properties no prior CGRA tool provides simultaneously: \emph{deterministic compilation with explicit placement} (cycle count predictable at authoring time), \emph{architecture-aware operators}
+and \emph{transparent expansion} (every construct has a documented, predictable expansion to CSV).
+
+\subsection{S-box Kernel Walkthrough}
+\label{subsec:sbox-openedge}
+
+Fig.~\ref{fig:sbox-pipeline} illustrates how our S-box kernel decomposes $x^7 \bmod p$ into four (modular) phases: 1) $x^2$ (\texttt{subrC} --squaring--); 2) $x^3 = x^2 \cdot x$ (\texttt{subrB} --general multiplication--); 3) $x^4 = (x^2)^2$ (\texttt{subrC}); and 4) $x^7 = x^4 \cdot x^3$ (\texttt{subrB}). Each phase performs a Barrett modular multiplication that consists of a base multiplication (\texttt{subrB}/\texttt{subrC}) followed by a Barret modular reduction (\texttt{subrA}).
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    block/.style={draw, thick, minimum height=0.35cm, font=\tiny\sffamily\bfseries, rounded corners=1pt, text=white},
+    lbl/.style={font=\scriptsize\sffamily, cgragray},
+]
+\def\totalw{8.0}
+\pgfmathsetmacro{\s}{\totalw/\MetricSboxKernelComputeCC}
+\draw[thick, -{Stealth[length=2pt]}] (0,-0.02) -- (\totalw+0.3,-0.02);
+\foreach \c/\x in {0/0, 50/50, 100/100, 150/150, \MetricSboxKernelComputeCC/\MetricSboxKernelComputeCC} {
+    \pgfmathsetmacro{\xpos}{\c*\s}
+    \draw (\xpos,-0.02) -- (\xpos,-0.15);
+    \node[lbl, below] at (\xpos,-0.1) {\x};
+}
+\node[lbl, right] at (\totalw-0.02,+0.2) {CC};
+
+\pgfmathsetmacro{\xa}{0*\s} \pgfmathsetmacro{\wa}{8*\s}
+\node[block, fill=cgrared!80, minimum width=\wa cm] at (\xa+\wa/2, 0.25) {C};
+\pgfmathsetmacro{\xb}{8*\s} \pgfmathsetmacro{\wb}{39*\s}
+\node[block, fill=cgrablue!80, minimum width=\wb cm] at (\xb+\wb/2, 0.25) {A};
+\pgfmathsetmacro{\xc}{49*\s} \pgfmathsetmacro{\wc}{13*\s}
+\node[block, fill=cgraorange!80, minimum width=\wc cm] at (\xc+\wc/2, 0.25) {B};
+\pgfmathsetmacro{\xd}{62*\s} \pgfmathsetmacro{\wdd}{39*\s}
+\node[block, fill=cgrablue!80, minimum width=\wdd cm] at (\xd+\wdd/2, 0.25) {A};
+\pgfmathsetmacro{\xe}{103*\s} \pgfmathsetmacro{\we}{8*\s}
+\node[block, fill=cgrared!80, minimum width=\we cm] at (\xe+\we/2, 0.25) {C};
+\pgfmathsetmacro{\xf}{111*\s} \pgfmathsetmacro{\wf}{39*\s}
+\node[block, fill=cgrablue!80, minimum width=\wf cm] at (\xf+\wf/2, 0.25) {A};
+\pgfmathsetmacro{\xg}{152*\s} \pgfmathsetmacro{\wg}{13*\s}
+\node[block, fill=cgraorange!80, minimum width=\wg cm] at (\xg+\wg/2, 0.25) {B};
+\pgfmathsetmacro{\xh}{165*\s} \pgfmathsetmacro{\wh}{39*\s}
+\node[block, fill=cgrablue!80, minimum width=\wh cm] at (\xh+\wh/2, 0.25) {A};
+
+\node[font=\footnotesize\sffamily\bfseries, above] at (24*\s, 0.4) {$x^2$};
+\node[font=\footnotesize\sffamily\bfseries, above] at (75*\s, 0.4) {$x^2\!\cdot\!x$};
+\node[font=\footnotesize\sffamily\bfseries, above] at (126*\s, 0.4) {$x^4$};
+\node[font=\footnotesize\sffamily\bfseries, above] at (177*\s, 0.4) {$x^7$};
+\end{tikzpicture}%
+}
+\caption{Temporal breakdown of the S-box kernel (\cc{\MetricSboxKernelComputeCC}). Barrett modular reduction (\texttt{subrA}) consumes \pct{\MetricSboxKernelBarrettSharePct} of execution.}
+\label{fig:sbox-pipeline}
+\end{figure}
+
+Fig.~\ref{fig:barrett-structure} shows the 6-steps Barret algorithm~\cite{barrett1986} and how it is decomposed into four algorithmic stages mapped to a specific CGRA hardware capability. Step 1 represents the base product (\texttt{subrB}/\texttt{subrC}) while steps 2-6 correspond to the Barret modular reduction (\texttt{subrA}). Step 1 is implemented as a parallel convolution: 32-bit operands decomposed into four 8-bit limbs, producing 16 partial products on the $4\!\times\!4$ PE mesh in our CGRA. Steps 2-3 represent the quotation estimation and are mapped as a toroidal accumulation via nearest-neighbor routing; Step 4, the modular subtraction, avoids expensive division via subtraction and AND masking; then steps 5-6 perform the final modular correction via branchless conditional BSFA (a single-cycle register select based on the ALU sign flag).
+
+\input{figures/fig_barrett_structure_test}
+
+\begin{figure}[hbt]
+\begin{lstlisting}[caption={S-box kernel for $x^7 mod~p$,
+ in \castm{} (key excerpts for \texttt{subrC} and \texttt{subrA}). \texttt{RCR/RCL/RCT/RCB} represent \textit{Reconfigurable Cell Right, Left, Top, Bottom}, respectively.}, label={lst:sbox-kernel}, basicstyle=\ttfamily\scriptsize]
+kernel "SBox" {
+    // PEs initialization
+    bundle { @0,1: goto subrC;  @3,0: R3 = ZERO + ret1; }
+    ret1:
+    bundle { @0,0: SWI R3, 720;  @0,1: goto subrB;
+              @3,0: R3 = ZERO + ret3; } // (*@\textcolor{cgragreen!70!black}{$\triangleright$ triple merge: SWI+goto+SADD in 1 bundle}@*)
+    ...
+    // Subroutine C: squaring (8 bundles)
+    subrC:
+    extract_bytes_col(R0, R1); // (*@\textcolor{cgragreen!70!black}{$\triangleright$ 4 PEs extract bytes in parallel}@*)
+    extract_bytes_row(R0, R0);
+    bundle { at all: R2 = R0 * R1; }  // (*@\textcolor{cgragreen!70!black}{$\triangleright$ 16 partial products simultaneously}@*)
+    // Toroidal accumulation (4 bundles via RCR/RCT/RCB)
+    bundle { @3,0: goto subrA; }
+
+    // Subroutine A: Barrett reduction (39 bundles)
+    subrA:
+    bundle { @0,0: R1 = RCR;  @0,1: R0 = RCB;  @0,2: R1 = RCB;}
+    // Quotient estimation: 12 PEs compute qhat limbs
+    bundle { at @0..2,0..3: R2 = R0 * R1; }
+    // ... (carry propagation, normalization)
+    // Branchless correction:
+    bundle { @0,0: R2 = R0 - RCL; }
+    bundle { @0,0: BSFA R3, R0, R2, SELF; } // (*@\textcolor{cgragreen!70!black}{$\triangleright$ if (r-p)<0: keep r; else: r-p}@*)
+    bundle { @3,0: goto R3; }         // (*@\textcolor{cgragreen!70!black}{$\triangleright$ return via register-indirect jump}@*)
+}
+\end{lstlisting}
+\end{figure}
+
+Listing~\ref{lst:sbox-kernel} shows key excerpts of the S-box kernel.
+The kernel structure reveals several design decisions enabled by \castm{}:
+
+\textbf{Jump-reuse subroutines}. All calls to subroutines are performed via register-indirect jumps. The Barrett modular reduction phase (\texttt{subrA}, \MetricSboxKernelSubrABundles~bundles) is shared across all four modular operations through a simple calling convention: the caller stores a return-address label in R3 (\mbox{\texttt{R3 = ZERO + retN}}, line 3, line 6), and the subroutine returns with \mbox{\texttt{goto R3}} (line 25). This avoids duplicating \MetricSboxKernelSubrABundles~bundles $\times$ \MetricSboxKernelSubrACalls~calls = \MetricSboxKernelSharedBundlesSaved~wasted bundles, reducing total kernel size from ${\sim}\MetricSboxKernelApproxPreReuseBundles$ to \MetricSboxKernelResidentBundles~bundles (see Section \ref{subsec:sbox-comparison}). In \castm{}, this pattern is expressed naturally with labels and \texttt{goto}; in manual CSV, the developer must compute absolute addresses for every jump target.
+
+\textbf{Triple instruction merging.} At label \texttt{ret1}, three independent operations execute on three different PEs in the same cycle (lines 5-6): \texttt{SWI} stores the intermediate result, \texttt{goto} jumps to the next subroutine, and \texttt{SADD} prepares the return address. The \texttt{bundle\{\}} statement makes this spatial parallelism explicit and verifiable; in CSV, it is easy to accidentally place two instructions on the same PE, causing a silent overwrite.
+
+\textbf{Systolic convolution.} The \texttt{subrC} uses the $4\!\times\!4$ mesh as a spatial multiplier (lines 10-14): \texttt{extract\_bytes} operators decompose operands into byte-size limbs distributed across columns and rows, then \mbox{\texttt{at all: R2 = R0 * R1}} computes all 16 partial products simultaneously. Toroidal accumulation converges results in 4~cycles via neighbor reads (RCR, RCT, RCB). All 16 PEs compute their partial product simultaneously; for squaring, the symmetric pairs are folded via in-place doubling during the subsequent accumulation phase, reducing it from 13 to 8 bundles compared to \texttt{subrB} that accumulates all the partial results explicitly.
+
+\textbf{Branchless correction.} The final BSFA instruction (line 24) selects between $r$ and $r - p$ based on the sign flag, completing modular reduction in a single cycle without branching---avoiding control divergence across the PE mesh.
+
+The jump-reuse feature imposes a residency constraint: the full \MetricSboxKernelResidentBundles-bundles of the kernel must remain simultaneously resident in the Configuration Register File --CRF-- so that register-indirect control flow can execute without fragmentation. When the kernel no longer fits, it must be partitioned into multiple dispatchable segments, sacrificing subroutine sharing and introducing reload overhead. Section~\ref{subsec:creg-analysis} quantifies this S-box-specific CRF-pressure trade-off and shows why it becomes a first-order architectural constraint for the full Poseidon2 evaluation.

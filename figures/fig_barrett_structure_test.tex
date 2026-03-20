@@ -1,0 +1,117 @@
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=Triangle, font=\sffamily]
+
+%%% ---------- DIMENSIONES COMPACTAS ----------
+\def\boxW{4.1}
+\def\boxH{4.6}       % CHANGED: was 3.9
+\def\gap{0.1}
+
+\def\barrettbox#1#2#3#4#5#6#7{
+    \begin{scope}[shift={(#1*\boxW + #1*\gap, 0)}]
+    % Caja principal
+    \node[draw=cgragray, thick, rounded corners=3pt, fill=white,
+          minimum width=\boxW cm, minimum height=\boxH cm, anchor=north west]
+          (mainbox#1) at (0,0) {};
+
+    % Sombreado superior
+    \fill[cgralight, rounded corners=3pt] (0.02, -0.02) rectangle (\boxW-0.02, -1.35); % CHANGED: was -1.15
+    \fill[cgralight] (0.02, -1.15) rectangle (\boxW-0.02, -1.35);                     % CHANGED: was -0.95 to -1.15
+    \draw[cgragray, thick, densely dashed] (0.15, -1.35) -- (\boxW-0.15, -1.35);       % CHANGED: was -1.15
+
+    % Bloque de código
+    \node[fill=codebg, rounded corners=2pt, draw=black!10,
+          minimum width=\boxW cm - 0.15cm, minimum height=1.5cm,  % CHANGED: was 1.3cm
+          anchor=south]
+          (codebg#1) at ([yshift=0.08cm]mainbox#1.south) {};
+
+    % --- TEXTOS ---
+
+    % Título arriba
+    \node[anchor=north, font=\bfseries\fontsize{9.5}{11}\selectfont, text=cgrablue,
+          text width=\boxW cm - 0.2cm, align=center]
+          (title#1) at (\boxW/2, 0.04) {#2};
+
+    % Formulación centrada en espacio restante (entre título y dashed)
+    \path (title#1.south) -- coordinate[midway] (formulamid#1) (\boxW/2, -1.25); % CHANGED: was -1.05
+    \node[anchor=center, font=\fontsize{9}{9}\selectfont, align=center,
+          text width=\boxW cm - 0.1cm, text=black]
+          (math#1) at (formulamid#1) {#3};
+
+    % Estrategia HW
+    \node[anchor=north, font=\bfseries\fontsize{9}{11}\selectfont, text=cgrared,
+          align=center, text width=\boxW cm - 0cm]
+          (strat#1) at ([yshift=-1.45cm]mainbox#1.north) {#4};  % CHANGED: was -1.2cm
+
+    % Descripción
+    \node[anchor=north, font=\fontsize{8}{9.5}\selectfont, align=center,  % CHANGED: leading 8->9.5
+          text width=\boxW cm - 0.3cm, text=black!85]
+          (desc#1) at ([yshift=+0.05cm]strat#1.south) {#5};     % CHANGED: was +0.10cm
+
+    % Código 
+    \node[anchor=north west, font=\ttfamily\fontsize{7.5}{9}\selectfont, align=left, % CHANGED: leading 7.5->9
+          text width=\boxW cm - 0.2cm, text=cgragreen!70!black]
+          at ([xshift=-0.02cm, yshift=-0.04cm]codebg#1.north west) {#6};  % CHANGED: was -0.02cm
+
+    % Etiqueta Map
+    \node[anchor=south east, font=\sffamily\bfseries\fontsize{7.5}{9}\selectfont,
+          text=cgrablue!90!black, fill=cgralight, rounded corners=2pt,
+          inner xsep=4pt, inner ysep=2pt, draw=cgragray!70]
+          at ([xshift=0.05cm, yshift=-0.04cm]codebg#1.south east) {Map $\rightarrow$ \texttt{#7}};
+
+    % Puertos
+    \coordinate (EAST#1) at (mainbox#1.east);
+    \coordinate (WEST#1) at (mainbox#1.west);
+    \end{scope}
+}
+
+\barrettbox{0}
+    {1. Base Product}
+    {$w \leftarrow x_1 \times x_2$}
+    {SPATIAL UNROLL.}
+    {16 PEs evaluate all partial products concurrently in one clock bundle.}
+    {\textcolor{cgragray}{// subrC (squaring): 1 bundle}\\[0.3ex]
+     bundle \{at all: R2 = R0*R1\}\\[0.3ex]
+     \textcolor{cgragray}{// subrB: same, + sep. loads}}
+    {subrC / subrB}
+
+\barrettbox{1}
+    {2-3. Estimation}
+    {$t \leftarrow (w \gg (n{-}1)) \cdot z$\\[0.3ex]$u \leftarrow (t \gg (n{+}1)) \cdot p$}
+    {MESH ROUTING}
+    {Inter-PE data mov. via neighbor registers. Shifts as single-bundle ALU ops.}
+    {\textcolor{cgragray}{// Quot. estimation: 12 PEs}\\[0.4ex]
+     bundle \{at @0..2,0..3: R2=R0*R1;\}}
+    {subrA}
+
+\barrettbox{2}
+    {4. Mod Subtraction}
+    {$(w \bmod 2^{n+1}) - (u \bmod 2^{n+1})$}
+    {EXPL. TRUNCATION}
+    {Modulo $2^{n+1}$ via single-bundle AND masking \\(\texttt{R3 = R3 \& R2}). No division.}
+    {\textcolor{cgragray}{// \dots (carry propagation,}\\[0.4ex]
+     \textcolor{cgragray}{// \phantom{\dots }normalization)}}
+    {subrA}
+
+\barrettbox{3}
+    {5-6. Correction}
+    {$\mathbf{if}\ y > p\ \mathbf{then}\ y \leftarrow y - p$}
+    {HW PREDICATION}
+    {Branches stall pipelines. Executed via 1-bundle branchless multiplexer.}
+    {\textcolor{cgragray}{// Branchless correction:}\\[0.3ex]
+     bundle \{@0,0: R2=R0-RCL;\}\\[0.3ex]
+     bundle \{@0,0: BSFA R3\dots \}}
+    {subrA}
+
+\foreach \i [evaluate=\i as \next using int(\i+1)] in {0,1,2} {
+    \draw[{Triangle[length=9pt, width=7pt, fill=cgrablue!80!black]}-, very thick, draw=cgrablue!80!black]
+        ([xshift=0.20cm]EAST\i) -- ([xshift=0.10cm]WEST\next);
+}
+
+\end{tikzpicture}%
+}
+\caption{Barrett modular multiplication mapped onto the CGRA. Each box shows the mathematical operation (top), hardware strategy (middle), and \castm{} code excerpt (bottom).}
+\label{fig:barrett-structure}
+\vspace{-0.4cm}
+\end{figure*}

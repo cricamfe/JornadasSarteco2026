@@ -1,6 +1,13 @@
 %!TEX root = main.tex
-\section{Conclusiones}
+\section{Conclusions}
+\label{sec:conclusion}
 
-Y esto es todo. Esperamos haber ayudado con esta plantilla a la que puedes
-contribuir haciendo Pull Request de este respositorio github:
-\url{https://github.com/rasenjop/Plantilla-Jornadas-Sarteco}.
+In this paper, we have presented \castm{}, the first API targeting the spatial-temporal programming model of CGRA architectures for cryptographic workloads. Specifically, for the BabyBear S-box layer on the  OpenEdgeCGRA architecture, \castm{} achieves a \pct{\MetricSboxCastmCycleReductionPct} cycle reduction over hand-optimized CSV (\cc{\MetricSboxCastmCC} vs. \cc{\MetricSboxManualCC}), while reducing source code by approximately \timex{\MetricLocCompressionVsManual}.
+
+RTL validation of the full Poseidon2 hash function on the ultra-low power HEEPsilon SoC gives us some system lessons. The Configuration Register File capacity is the enabling condition: once the kernel fits in the CRF the running times are no longer masked by reload fragmentation. Under that condition,
+offloading the full kernel to the CGRA (\textit{CGRA-only}) minimizes the total energy, whereas a hybrid deployment that computes hashes on the CPU and the accelerator (\textit{CPU+CGRA}) offers the highest throughput.
+
+In summary, we have shown that it is possible to enable privacy-preserving verification on wearable biomedical devices through Zero-Knowledge Proofs, on hardware that is both energy-efficient and with reprogramming capability to track the rapid evolution of ZKP systems.
+
+\textbf{Future work.} Two directions follow: (1)~dual-port SRAM or DMA burst modes to reduce the memory stalls that represent now the main source of overhead;
+and (2)~evaluation on alternative ZKP fields (Goldilocks, BN254) and post-quantum workloads to test the generality of \castm{}'s API.
