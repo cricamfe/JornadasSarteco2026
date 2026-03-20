@@ -1,12 +1,12 @@
 \begin{table}[ht]
-\caption{Halstead metrics for the S-box kernel. LOC: source lines; $\eta$: unique vocabulary; $N$: active tokens (NOP excl.); $V_{\text{act}}=N\log_2\eta$: active volume~\cite{halstead1977}; Ratio: $V_{\text{act}}$ norm.\ to C++.}
-\label{tab:halstead}
 \centering
+\caption{Halstead metrics for the S-box kernel.}
+\label{tab:halstead}
 \scriptsize
 \setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}l|rrrrr@{}}
 \toprule
-\textbf{Approach} & \textbf{LOC} & \boldmath{$\eta$} & \boldmath{$N$} & \boldmath{$V_{\text{act}}$} & \textbf{Ratio} \\
+\textbf{Approach} & \textbf{LOC} & \boldmath{$\eta$} & \boldmath{$N$} & \boldmath{$V_{act}$} & \textbf{Ratio} \\
 \midrule
 C++ (Ref.) & 25 & 39 & 104 & 550 & $1.0\times$ \\
 Compigra & 47 & 53 & 227 & 1{,}300 & $2.4\times$ \\
@@ -14,4 +14,6 @@ Manual CSV & 2{,}030 & 48 & 6{,}348 & 35{,}453 & $64.5\times$ \\
 \castm{} (\textbf{Ours}) & \textbf{340} & \textbf{55} & \textbf{607} & \textbf{3{,}509} & $\mathbf{6.4\times}$ \\
 \bottomrule
 \end{tabular}
+\\[2pt]
+{\scriptsize LOC: source lines; $\eta$: unique vocabulary; $N$: active tokens (NOP excl.); $V_{\text{act}}=N\log_2\eta$: active volume~\cite{halstead1977}; Ratio: $V_{\text{act}}$ normalized to C++ reference.}
 \end{table}
