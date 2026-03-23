@@ -417,7 +417,7 @@ page \thepage \space undefined}}%
 \def\shortcite{\def\citename##1{}\@internalcite}
 \def\@biblabel#1{\def\citename##1{##1}[#1]\hfill}
 
-\def\thebibliography#1{\section*{Referencias}\footnotesize\list
+\def\thebibliography#1{\section*{References}\footnotesize\list
     {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
     \advance\leftmargin\labelsep \itemsep 0pt plus .5pt
     \usecounter{enumi}}
@@ -429,12 +429,12 @@ page \thepage \space undefined}}%
 %% appendix command for one single appendix
 \def\appendix{\par
     \setcounter{section}{0}\setcounter{subsection}{0}
-    \def\thesection{\Alph{section}} \section*{Ap\'endice}
+    \def\thesection{\Alph{section}} \section*{Appendix}
 }
 %% appendices command for multiple appendicies
 \def\appendices{\par
     \setcounter{section}{0}\setcounter{subsection}{0}
-    \def\thesection{\Alph{section}} \section*{Ap\'endices}
+    \def\thesection{\Alph{section}} \section*{Appendices}
 }
 
 \def\maketitle{\par
