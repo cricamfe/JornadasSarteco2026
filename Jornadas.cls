@@ -464,18 +464,18 @@ page \thepage \space undefined}}%
 
 \def\abstract{%
     \if@twocolumn
-      \small\it Resumen\/\bf---$\!$%
+      \small\it Abstract\/\bf---$\!$%
     \else
-      \begin{center}\vspace{-0.8em}\small\bf Resumen\end{center}\quotation\small
+      \begin{center}\vspace{-0.8em}\small\bf Abstract\end{center}\quotation\small
     \fi}
 \def\endabstract{\vspace{0.6em}\par\if@twocolumn\else\endquotation\fi
     \normalsize\rm}
 
 \def\keywords{\vspace{-.3em}
     \if@twocolumn
-      \small\it Palabras clave\/\bf---$\!$%
+      \small\it Keywords\/\bf---$\!$%
     \else
-      \begin{center}\small\bf Palabras clave\end{center}\quotation\small
+      \begin{center}\small\bf Keywords\end{center}\quotation\small
     \fi}
 \def\endkeywords{\vspace{0.6em}\par\if@twocolumn\else\endquotation\fi
     \normalsize\rm}
