@@ -23,44 +23,70 @@ satisfying data dependencies, multi-cycle latencies, memory-port arbitration, an
 \subsection{Poseidon2 S-box Exponentiation}
 \label{subsec:poseidon2}
 
-Poseidon2~\cite{poseidon2} is a ZKP-friendly hash function engineered to minimize finite-field multiplications per permutation, since each multiplication translates directly to proof-generation cost. Fig.~\ref{fig:poseidon2-structure} shows its round structure: it operates on a state $s = (s_0, s_1, s_2, \ldots, s_{t-1})$ of $t$ field elements through $R_F/2$ full rounds, then a $R_P$ partial round for cell $s_0$, and next $R_F/2$ full rounds again on $s$. Each round applies a S-box layer ($x \mapsto x^d \bmod p$), a linear {\textit Maximum Distance Separable} layer (MDS, a $t \times t$ matrix used to provide maximum diffusion), and a round-constant addition ($+c_i$, a standard feature to ensure each round behaves differently).
+Poseidon2~\cite{poseidon2} is a ZKP-friendly hash function engineered to minimize finite-field multiplications per permutation, since each multiplication translates directly to proof-generation cost. Fig.~\ref{fig:poseidon2-structure} shows its round structure: it operates on a state $s = (s_0, s_1, s_2, \ldots, s_{t-1})$ of $t$ field elements through $R_F/2$ full rounds, then a $R_P$ partial round for cell $s_0$, and next $R_F/2$ full rounds again on $s$. Each round applies a S-box layer ($x \mapsto x^d \Mod p$), a linear {\textit Maximum Distance Separable} layer (MDS, a $t \times t$ matrix used to provide maximum diffusion), and a round-constant addition ($+c_i$, a standard feature to ensure each round behaves differently).
 For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon2 invokes $8 \times 16 + 13 = 141$ S-box evaluations, making the S-box layer over 90\% of total computation on a 32-bit CGRA.
 
 \begin{figure}[t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
-    box/.style={draw, thick, minimum height=0.6cm, minimum width=1.0cm, font=\scriptsize\sffamily, rounded corners=2pt},
+    % 1. Configuración de la cadena para el posicionamiento automático
+    start chain=going right,
+    node distance=0.12cm, 
+    % Estilos
+    box/.style={draw, thick, inner sep=3pt, minimum height=0.55cm, font=\footnotesize\sffamily, rounded corners=2pt, on chain},
     sbox/.style={box, fill=cgrared!15},
     mds/.style={box, fill=cgrablue!15},
     rc/.style={box, fill=cgragreen!15},
-    arr/.style={-{Stealth[length=3pt]}, thick},
-    lbl/.style={font=\footnotesize\sffamily, cgragray},
+    arr/.style={-{Stealth[length=4pt]}, thick},
+    lbl/.style={font=\scriptsize\sffamily, text=cgragray},
+    group_label/.style={font=\footnotesize\sffamily\bfseries}
 ]
-\node[font=\scriptsize\sffamily] (inp) at (0,0) {state};
-\node[sbox, right=0.4cm of inp] (sb1) {S-box};
-\node[lbl, above=0.02cm of sb1] {$\forall s_i$};
-\node[mds, right=0.2cm of sb1] (m1) {MDS};
-\node[rc, right=0.2cm of m1] (r1) {$+c_i$};
-\draw[arr] (inp) -- (sb1); \draw[arr] (sb1) -- (m1); \draw[arr] (m1) -- (r1);
-\node[font=\footnotesize\sffamily\bfseries, above=0.25cm of m1] {Full ($\times R_F/2$)};
 
-\node[sbox, right=0.5cm of r1] (sb2) {S-box};
-\node[lbl, above=0.02cm of sb2] {$s_0$};
-\node[mds, right=0.2cm of sb2] (m2) {MDS};
-\node[rc, right=0.2cm of m2] (r2) {$+c_i$};
-\draw[arr] (r1) -- node[above, lbl] {$\cdots$} (sb2); \draw[arr] (sb2) -- (m2); \draw[arr] (m2) -- (r2);
-\node[font=\footnotesize\sffamily\bfseries, above=0.25cm of m2] {Partial ($\times R_P$)};
+% --- DEFINICIÓN ESPACIAL (Nodos) ---
+\node[on chain, font=\footnotesize\sffamily, inner sep=2pt] (inp) {state};
 
-\node[sbox, right=0.5cm of r2] (sb3) {S-box};
-\node[lbl, above=0.02cm of sb3] {$\forall s_i$};
-\node[mds, right=0.2cm of sb3] (m3) {MDS};
-\node[font=\scriptsize\sffamily, right=0.3cm of m3] (out) {out};
-\draw[arr] (r2) -- node[above, lbl] {$\cdots$} (sb3); \draw[arr] (sb3) -- (m3); \draw[arr] (m3) -- (out);
-\node[font=\footnotesize\sffamily\bfseries, above=0.25cm of m3] {Full ($\times R_F/2$)};
+\node[sbox] (sb1) {S-box};
+\node[mds]  (m1)  {MDS};
+\node[rc]   (r1)  {$+c_i$};
+
+\node[sbox] (sb2) {S-box};
+\node[mds]  (m2)  {MDS};
+\node[rc]   (r2)  {$+c_i$};
+
+\node[sbox] (sb3) {S-box};
+\node[mds]  (m3)  {MDS};
+
+\node[on chain, font=\footnotesize\sffamily, inner sep=2pt] (out) {out};
+
+
+% --- ENRUTADO (Conexiones) ---
+\draw[arr] (inp) -- (sb1);
+\draw[arr] (sb1) -- (m1);
+\draw[arr] (m1)  -- (r1);
+
+\draw[arr] (r1)  -- node[above, lbl] {$\cdots$} (sb2);
+\draw[arr] (sb2) -- (m2);
+\draw[arr] (m2)  -- (r2);
+
+\draw[arr] (r2)  -- node[above, lbl] {$\cdots$} (sb3);
+\draw[arr] (sb3) -- (m3);
+\draw[arr] (m3)  -- (out);
+
+
+% --- ETIQUETADO ---
+\node[lbl, above=0.05cm of sb1] {$\forall s_i$};
+\node[group_label, above=0.35cm of m1] {Full ($\times R_F/2$)};
+
+\node[lbl, above=0.05cm of sb2] {$s_0$};
+\node[group_label, above=0.35cm of m2] {Partial ($\times R_P$)};
+
+\node[lbl, above=0.05cm of sb3] {$\forall s_i$};
+\node[group_label, above=0.35cm of m3] {Full ($\times R_F/2$)};
+
 \end{tikzpicture}%
 }
-\caption{Poseidon2 permutation structure. The S-box ($x^d \bmod p$) dominates cost.}
+\caption{Poseidon2 permutation structure. The S-box ($x^d \Mod p$) dominates cost.}
 \label{fig:poseidon2-structure}
 \end{figure}
 

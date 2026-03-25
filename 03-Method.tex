@@ -61,46 +61,79 @@ and \emph{transparent expansion} (every construct has a documented, predictable 
 \subsection{S-box Kernel Walkthrough}
 \label{subsec:sbox-openedge}
 
-Fig.~\ref{fig:sbox-pipeline} illustrates how our S-box kernel decomposes $x^7 \bmod p$ into four (modular) phases: 1) $x^2$ (\texttt{subrC} --squaring--); 2) $x^3 = x^2 \cdot x$ (\texttt{subrB} --general multiplication--); 3) $x^4 = (x^2)^2$ (\texttt{subrC}); and 4) $x^7 = x^4 \cdot x^3$ (\texttt{subrB}). Each phase performs a Barrett modular multiplication that consists of a base multiplication (\texttt{subrB}/\texttt{subrC}) followed by a Barret modular reduction (\texttt{subrA}).
+Fig.~\ref{fig:sbox-pipeline} illustrates how our S-box kernel decomposes $x^7 \Mod p$ into four (modular) phases: 1) $x^2$ (\texttt{subrC} --squaring--); 2) $x^3 = x^2 \cdot x$ (\texttt{subrB} --general multiplication--); 3) $x^4 = (x^2)^2$ (\texttt{subrC}); and 4) $x^7 = x^4 \cdot x^3$ (\texttt{subrB}). Each phase performs a Barrett modular multiplication that consists of a base multiplication (\texttt{subrB}/\texttt{subrC}) followed by a Barret modular reduction (\texttt{subrA}).
 
 \begin{figure}[t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
-    block/.style={draw, thick, minimum height=0.35cm, font=\tiny\sffamily\bfseries, rounded corners=1pt, text=white},
-    lbl/.style={font=\scriptsize\sffamily, cgragray},
+    block/.style={draw, thick, minimum height=0.45cm, font=\scriptsize\sffamily\bfseries, rounded corners=1pt, text=white, anchor=west, inner xsep=0pt, outer sep=0pt},
+    lbl/.style={font=\normalsize\sffamily, cgragray},
 ]
-\def\totalw{8.0}
-\pgfmathsetmacro{\s}{\totalw/\MetricSboxKernelComputeCC}
-\draw[thick, -{Stealth[length=2pt]}] (0,-0.02) -- (\totalw+0.3,-0.02);
-\foreach \c/\x in {0/0, 50/50, 100/100, 150/150, \MetricSboxKernelComputeCC/\MetricSboxKernelComputeCC} {
-    \pgfmathsetmacro{\xpos}{\c*\s}
-    \draw (\xpos,-0.02) -- (\xpos,-0.15);
-    \node[lbl, below] at (\xpos,-0.1) {\x};
+
+% =========================================================
+% 1. VARIABLES DE CONFIGURACIÓN GENERAL
+% =========================================================
+\def\totalw{8.0} % Ancho total físico en cm
+\pgfmathsetmacro{\s}{\totalw/\MetricSboxKernelComputeCC} % Factor de escala
+
+% Latencias en ciclos de reloj (CC)
+\def\wA{39}
+\def\wB{13}
+\def\wC{8}
+\def\gap{2} % Hueco de separación entre operaciones completas
+
+% Alturas Y para organizar visualmente
+\def\yBlock{0.25} 
+\def\yLabel{0.55} 
+
+% =========================================================
+% 2. DIBUJO DEL EJE TEMPORAL
+% =========================================================
+\draw[thick, -{Stealth[length=5pt, width=4pt]}] (0,-0.1) -- (\totalw+0.5,-0.1);
+
+\foreach \x in {0, 50, 100, 150, \MetricSboxKernelComputeCC} {
+    \pgfmathsetmacro{\xpos}{\x*\s}
+    \draw[thick] (\xpos,-0.1) -- (\xpos,-0.3);
+    \node[lbl, below] at (\xpos,-0.3) {\x};
 }
-\node[lbl, right] at (\totalw-0.02,+0.2) {CC};
+\node[lbl, right] at (\totalw+0.1, 0.15) {CC};
 
-\pgfmathsetmacro{\xa}{0*\s} \pgfmathsetmacro{\wa}{8*\s}
-\node[block, fill=cgrared!80, minimum width=\wa cm] at (\xa+\wa/2, 0.25) {C};
-\pgfmathsetmacro{\xb}{8*\s} \pgfmathsetmacro{\wb}{39*\s}
-\node[block, fill=cgrablue!80, minimum width=\wb cm] at (\xb+\wb/2, 0.25) {A};
-\pgfmathsetmacro{\xc}{49*\s} \pgfmathsetmacro{\wc}{13*\s}
-\node[block, fill=cgraorange!80, minimum width=\wc cm] at (\xc+\wc/2, 0.25) {B};
-\pgfmathsetmacro{\xd}{62*\s} \pgfmathsetmacro{\wdd}{39*\s}
-\node[block, fill=cgrablue!80, minimum width=\wdd cm] at (\xd+\wdd/2, 0.25) {A};
-\pgfmathsetmacro{\xe}{103*\s} \pgfmathsetmacro{\we}{8*\s}
-\node[block, fill=cgrared!80, minimum width=\we cm] at (\xe+\we/2, 0.25) {C};
-\pgfmathsetmacro{\xf}{111*\s} \pgfmathsetmacro{\wf}{39*\s}
-\node[block, fill=cgrablue!80, minimum width=\wf cm] at (\xf+\wf/2, 0.25) {A};
-\pgfmathsetmacro{\xg}{152*\s} \pgfmathsetmacro{\wg}{13*\s}
-\node[block, fill=cgraorange!80, minimum width=\wg cm] at (\xg+\wg/2, 0.25) {B};
-\pgfmathsetmacro{\xh}{165*\s} \pgfmathsetmacro{\wh}{39*\s}
-\node[block, fill=cgrablue!80, minimum width=\wh cm] at (\xh+\wh/2, 0.25) {A};
+% =========================================================
+% 3. MACRO DE GENERACIÓN DE ETAPAS DEL PIPELINE
+% =========================================================
+% Inicializamos la variable global para rastrear el ciclo actual
+\def\currentCC{0}
 
-\node[font=\footnotesize\sffamily\bfseries, above] at (24*\s, 0.4) {$x^2$};
-\node[font=\footnotesize\sffamily\bfseries, above] at (75*\s, 0.4) {$x^2\!\cdot\!x$};
-\node[font=\footnotesize\sffamily\bfseries, above] at (126*\s, 0.4) {$x^4$};
-\node[font=\footnotesize\sffamily\bfseries, above] at (177*\s, 0.4) {$x^7$};
+% Comando: \drawSboxStage{Fórmula}{Texto 1}{Ancho 1}{Color 1}{Texto 2}{Ancho 2}{Color 2}
+\newcommand{\drawSboxStage}[7]{
+    % 1. Dibuja el primer bloque (op. auxiliar: ej. C o B)
+    \node[block, fill=#4, minimum width=#3*\s cm] at (\currentCC*\s, \yBlock) {#2};
+    
+    % 2. Calcula el inicio del bloque principal
+    \pgfmathparse{\currentCC + #3}
+    \let\startMain\pgfmathresult
+    
+    % 3. Dibuja el bloque principal (reducción de Barrett: ej. A)
+    \node[block, fill=#7, minimum width=#6*\s cm] at (\startMain*\s, \yBlock) {#5};
+    
+    % 4. Centra la fórmula matemáticamente sobre el bloque principal
+    \pgfmathparse{(\startMain + #6/2)*\s}
+    \node[font=\Large\sffamily\bfseries, above] at (\pgfmathresult, \yLabel) {#1};
+    
+    % 5. Actualiza la variable global para la siguiente etapa (suma el gap)
+    \pgfmathparse{\startMain + #6 + \gap}
+    \xdef\currentCC{\pgfmathresult} % \xdef fuerza la asignación global
+}
+
+% =========================================================
+% 4. EJECUCIÓN DEL PIPELINE (Limpio y escalable)
+% =========================================================
+\drawSboxStage{$x^2$}{C}{\wC}{cgrared!80}{A}{\wA}{cgrablue!80}
+\drawSboxStage{$x^2\!\cdot\!x$}{B}{\wB}{cgraorange!80}{A}{\wA}{cgrablue!80}
+\drawSboxStage{$x^4$}{C}{\wC}{cgrared!80}{A}{\wA}{cgrablue!80}
+\drawSboxStage{$x^7$}{B}{\wB}{cgraorange!80}{A}{\wA}{cgrablue!80}
+
 \end{tikzpicture}%
 }
 \caption{Temporal breakdown of the S-box kernel (\cc{\MetricSboxKernelComputeCC}). Barrett modular reduction (\texttt{subrA}) consumes \pct{\MetricSboxKernelBarrettSharePct} of execution.}
@@ -112,33 +145,34 @@ Fig.~\ref{fig:barrett-structure} shows the 6-steps Barret algorithm~\cite{barret
 \input{figures/fig_barrett_structure_test}
 
 \begin{figure}[hbt]
-\begin{lstlisting}[caption={S-box kernel for $x^7 mod~p$,
- in \castm{} (key excerpts for \texttt{subrC} and \texttt{subrA}). \texttt{RCR/RCL/RCT/RCB} represent \textit{Reconfigurable Cell Right, Left, Top, Bottom}, respectively.}, label={lst:sbox-kernel}, basicstyle=\ttfamily\scriptsize]
+\begin{lstlisting}[caption={S-box kernel for $x^7 \Mod p$ (key excerpts). \texttt{RCR/RCL/RCT/RCB} denote \textit{Read Cell Right, Left, Top, Bottom}.}, label={lst:sbox-kernel}, breaklines=false, basicstyle=\ttfamily\fontsize{7}{8.4}\selectfont, columns=fullflexible, xleftmargin=2mm]
 kernel "SBox" {
-    // PEs initialization
-    bundle { @0,1: goto subrC;  @3,0: R3 = ZERO + ret1; }
-    ret1:
-    bundle { @0,0: SWI R3, 720;  @0,1: goto subrB;
-              @3,0: R3 = ZERO + ret3; } // (*@\textcolor{cgragreen!70!black}{$\triangleright$ triple merge: SWI+goto+SADD in 1 bundle}@*)
-    ...
-    // Subroutine C: squaring (8 bundles)
-    subrC:
-    extract_bytes_col(R0, R1); // (*@\textcolor{cgragreen!70!black}{$\triangleright$ 4 PEs extract bytes in parallel}@*)
-    extract_bytes_row(R0, R0);
-    bundle { at all: R2 = R0 * R1; }  // (*@\textcolor{cgragreen!70!black}{$\triangleright$ 16 partial products simultaneously}@*)
-    // Toroidal accumulation (4 bundles via RCR/RCT/RCB)
-    bundle { @3,0: goto subrA; }
+ // Main: set return addr, jump to subrC
+ bundle { @0,1: goto subrC;
+           @3,0: R3 = ZERO + ret1; }
+ ret1: //(*@\textcolor{cgragreen!70!black}{$\,\triangleright$ triple merge}@*)
+ bundle { @0,0: SWI R3, 720;
+           @0,1: goto subrB;
+           @3,0: R3 = ZERO + ret3; }
+ ...
+ subrC: // squaring accumulation (8 bndl)
+ extract_bytes_col(R0, R1); //(*@\textcolor{cgragreen!70!black}{$\,\triangleright$ 4 PEs extract bytes}@*)
+ extract_bytes_row(R0, R0);
+ bundle { at all: R2 = R0 * R1; } //(*@\textcolor{cgragreen!70!black}{$\,\triangleright$ 16 products}@*)
+ // Toroidal accumulation (4 bndl, RCR/RCT/RCB)
+ bundle { @3,0: goto subrA; }
 
-    // Subroutine A: Barrett reduction (39 bundles)
-    subrA:
-    bundle { @0,0: R1 = RCR;  @0,1: R0 = RCB;  @0,2: R1 = RCB;}
-    // Quotient estimation: 12 PEs compute qhat limbs
-    bundle { at @0..2,0..3: R2 = R0 * R1; }
-    // ... (carry propagation, normalization)
-    // Branchless correction:
-    bundle { @0,0: R2 = R0 - RCL; }
-    bundle { @0,0: BSFA R3, R0, R2, SELF; } // (*@\textcolor{cgragreen!70!black}{$\triangleright$ if (r-p)<0: keep r; else: r-p}@*)
-    bundle { @3,0: goto R3; }         // (*@\textcolor{cgragreen!70!black}{$\triangleright$ return via register-indirect jump}@*)
+ subrA: // Barrett reduction (39 bndl)
+ bundle { @0,0: R1 = RCR;
+           @0,1: R0 = RCB;
+           @0,2: R1 = RCB; }
+ // Quotient estimation: 12 PEs
+ bundle { at @0..2,0..3: R2 = R0 * R1; }
+ // ... carry prop., normalization
+ // Branchless correction:
+ bundle { @0,0: R2 = R0 - RCL; }
+ bundle { @0,0: BSFA R3, R0, R2,S ELF;}//(*@\textcolor{cgragreen!70!black}{$\,\triangleright$ if r$\geq$p: r-p}@*)
+ bundle { @3,0: goto R3; } //(*@\textcolor{cgragreen!70!black}{$\,\triangleright$ return}@*)
 }
 \end{lstlisting}
 \end{figure}
@@ -155,3 +189,40 @@ The kernel structure reveals several design decisions enabled by \castm{}:
 \textbf{Branchless correction.} The final BSFA instruction (line 24) selects between $r$ and $r - p$ based on the sign flag, completing modular reduction in a single cycle without branching---avoiding control divergence across the PE mesh.
 
 The jump-reuse feature imposes a residency constraint: the full \MetricSboxKernelResidentBundles-bundles of the kernel must remain simultaneously resident in the Configuration Register File --CRF-- so that register-indirect control flow can execute without fragmentation. When the kernel no longer fits, it must be partitioned into multiple dispatchable segments, sacrificing subroutine sharing and introducing reload overhead. Section~\ref{subsec:creg-analysis} quantifies this S-box-specific CRF-pressure trade-off and shows why it becomes a first-order architectural constraint for the full Poseidon2 evaluation.
+
+\subsection{Spatial Mapping Methodology}
+\label{subsec:spatial-mapping}
+
+The S-box mapping described above relies on a set of design patterns that are not specific to Poseidon2 or BabyBear, but apply to any modular-arithmetic kernel on a $N{\times}M$ toroidal CGRA. We describe them here as reusable principles.
+
+\subsubsection{Operand Decomposition across the PE Mesh}
+\label{subsubsec:decomposition}
+
+When an arithmetic operation produces intermediates wider than the PE datapath ($w$~bits), the standard approach on a sequential processor is to serialize limb-by-limb. On a CGRA, the 2D mesh can be exploited spatially: each operand is decomposed into $N$ limbs of $w/N$~bits, one per PE along a column (or row), so that all limbs are available simultaneously without memory contention.
+
+In our case, two 31-bit operands $a$ and $b$ are decomposed into four 8-bit limbs distributed along columns and rows, respectively. The $4\!\times\!4$ grid then computes all 16 partial products $a_i \cdot b_j$ in a single bundle---the mesh \emph{is} the multiplier array. The anti-diagonals ($k = i+j$) naturally group products by significance (base-$2^8$ weight), so the subsequent accumulation reduces to summing along these diagonals via nearest-neighbor links.
+
+This pattern generalizes to any field width: for a 64-bit field (e.g., Goldilocks) one would use 16-bit limbs on the same $4\!\times\!4$ mesh, or 8-bit limbs on a larger array. The mesh dimensions naturally match the number of limbs, making the CGRA topology a first-class design parameter rather than an afterthought. For squaring ($a = b$), the symmetry $a_i \cdot a_j = a_j \cdot a_i$ allows the accumulation phase to fold off-diagonal pairs via in-place doubling, reducing accumulation from 13 to 8~bundles compared to general multiplication.
+
+\subsubsection{Toroidal Carry Propagation}
+\label{subsubsec:carry-chain}
+
+After computing partial products, carries must propagate from less-significant to more-significant limbs. On a conventional processor this is a sequential chain; on the CGRA, it becomes a spatial wavefront through the nearest-neighbor interconnect. Carries propagate left-to-right along row~0 via \texttt{RCL} (Read Column Left) in a repeating three-instruction pattern per hop: \textit{extract} carry (\texttt{R3 = R0 {>}{>} 16}), \textit{mask} the current limb (\texttt{R0 = R0 \& 0xFFFF}), and \textit{inject} the carry into the next column (\texttt{R0 = R0 + RCL}). Vertical aggregation from rows below uses \texttt{RCB}/\texttt{RCT} (torus links), and the torus wrap bounds the maximum propagation distance to $N$~hops regardless of mesh size.
+
+This spatial carry pattern replaces what would be a multi-cycle sequential loop on the host processor with a fixed-latency wavefront whose depth equals the mesh diameter. The principle is directly applicable to any multi-limb operation (Montgomery multiplication, Karatsuba decomposition, NTT butterfly networks) on any toroidal CGRA, regardless of the specific prime or field size.
+
+\subsubsection{Subroutine Sharing on a Stack-less Architecture}
+\label{subsubsec:subroutine-sharing}
+
+CGRAs typically lack a call stack: the program counter advances through the CRF linearly or via direct jumps. Mapping modular exponentiation na\"ively would inline every Barrett reduction, producing a kernel whose size grows linearly with the number of modular operations---$O(n \cdot B)$ bundles for $n$ reductions of $B$ bundles each. For $x^7 \Mod p$ with $n{=}4$ and $B{=}39$, this alone would exceed 150~bundles before accounting for the multiplications themselves.
+
+Our approach introduces a \emph{register-indirect return convention}: before calling a subroutine, the caller writes the return-address label into a designated register (R3) at a fixed PE (PE[3,0]). The subroutine concludes with \texttt{goto R3}, transferring control back to the caller. This reduces kernel size from $O(n \cdot B)$ to $O(B{+}n)$---the subroutine body appears once, plus a small dispatch stub per call.
+
+The convention also enables \emph{fall-through chaining}: when two subroutines are logically sequential (e.g., multiplication followed by reduction), placing them contiguously in instruction memory eliminates the jump entirely---execution falls through from the last bundle of one into the first of the next. This asymmetric layout (squaring uses an explicit jump to reduction; multiplication falls through) saves one cycle per multiplication call.
+
+\subsubsection{Multi-PE Bundle Merging}
+\label{subsubsec:merging}
+
+A CGRA bundle activates all PEs simultaneously, but not every PE needs to perform useful work in every cycle. When independent operations target different PEs, they can be \emph{merged} into the same bundle without conflict. The S-box kernel exploits this systematically: at return points, three operations execute in a single cycle on three distinct PEs---a memory store (\texttt{SWI} on PE[0,0]), a subroutine jump (\texttt{goto} on PE[0,1]), and a return-address setup (\texttt{R3 = ZERO + retN} on PE[3,0]).
+
+This pattern is especially effective at subroutine boundaries, where control-flow overhead (jumps, address setup) would otherwise consume dedicated cycles. The general principle is that any CGRA kernel should be audited for \emph{bundle utilization gaps}---cycles where some PEs are idle---and those gaps should be filled with logically independent operations from adjacent phases. In our case, this transforms what would be three sequential overhead cycles into zero additional latency.

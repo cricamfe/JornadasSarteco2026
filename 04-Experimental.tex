@@ -45,7 +45,7 @@ Idle (\%) in Table~\ref{tab:sbox-comparison} is reported as a bundle-wise geomet
 
 \textbf{Compigra cannot map S-box directly.}
 The automatic compiler's scheduling heuristic fails on the S-box kernel because Barrett reduction requires cross-PE carry chains and branchless conditional selects that exceed its mapping capabilities.
-The workaround is to manually decompose $x^7 \bmod p$ into sub-kernels
+The workaround is to manually decompose $x^7 \Mod p$ into sub-kernels
 and iteratively subdivide when compilation fails---a trial-and-error process that negates the ``automatic'' premise.
 The result is \MetricSboxCompigraDispatches{} dispatches with \pct{\MetricSboxCompigraIdlePct} Idle and \pct{\MetricSboxCompigraSmulPct} of SMUL utilization: the hardware multiplier is never used, and the CGRA spends most cycles idle while data is shuffled between dispatches.
 

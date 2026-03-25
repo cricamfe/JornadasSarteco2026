@@ -25,7 +25,7 @@
 \usepackage{float}
 \usepackage{tikz}
 \usepackage{makecell}
-\usetikzlibrary{shapes,arrows,positioning,calc,fit,backgrounds,matrix,arrows.meta,shapes.geometric,patterns,decorations.pathreplacing,babel}
+\usetikzlibrary{shapes,arrows,positioning,calc,fit,backgrounds,matrix,arrows.meta,shapes.geometric,patterns,decorations.pathreplacing,babel,chains}
 
 % -*- Ajustes LaTeX en relación a las figuras -*-
 \setcounter{topnumber}{10}
@@ -139,7 +139,7 @@
 
 \begin{document}
 
-\title{Accelerating Zero-Knowledge Proof kernels on CGRA Architectures}
+\title{Accelerating Zero-Knowledge Proof Kernels on CGRA Architectures}
 
 \author{%
      Cristian Campos Ferrer, Ángeles G.\ Navarro y Sonia González-Navarro%
@@ -152,11 +152,20 @@
 \pagestyle{empty}
 \thispagestyle{empty}
 
+%% ANTIGUO ABSTRACT
+% \begin{abstract}
+% Wearable biomedical devices increasingly require on-device privacy guarantees through Zero-Knowledge Proofs~(ZKPs), yet the underlying cryptographic kernels, based on modular exponentiation over prime fields, far exceed what low-power microcontrollers can deliver. Coarse-Grained Reconfigurable Arrays~(CGRAs) offer near-ASIC efficiency with the reprogrammability needed to track evolving ZKP standards, but programming them requires manual, cycle-by-cycle scheduling across a spatial processing-element mesh.
+% %
+% We present \castm{}, a \textit{CGRA API} \& \textit{Spatial Temporal Mapper} for the OpenEdgeCGRA architecture. \castm{} preserves explicit spatial-temporal control while raising the abstraction level through structured abstractions and architecture-aware operators that encapsulate recurring modular-arithmetic idioms. For the S-box layer, a key component of the popular ZKP-friendly hash function Poseidon2, \castm{} achieves \timex{\MetricSboxCastmSpeedupVsManual} speedup w.r.t.\ the hand-optimized version while reducing source code by approximately \timex{\MetricLocCompressionVsManual}.
+% We also identify that for long ZKP kernels multi-batch configuration reload is the dominant bottleneck, and show that increasing the Configuration Register File from 32 to 512 entries (+\pct{\MetricCrfFullFitAreaPct} FPGA area) allow us to deploy the full Poseidon2 kernel on the CGRA achieving \timex{\MetricMerkleOffloadProjectedSpeedup} speedup and \MetricMerkleOffloadEnergySavingsPct\% of energy savings over a ultra-low power RISC-V CPU core.
+% \end{abstract}
+
+%% POSIBLE MUEVO ABSTRACT
 \begin{abstract}
-Wearable biomedical devices increasingly require on-device privacy guarantees through Zero-Knowledge Proofs~(ZKPs), yet the underlying cryptographic kernels, based on modular exponentiation over prime fields, far exceed what low-power microcontrollers can deliver. Coarse-Grained Reconfigurable Arrays~(CGRAs) offer near-ASIC efficiency with the reprogrammability needed to track evolving ZKP standards, but programming them requires manual, cycle-by-cycle scheduling across a spatial processing-element mesh.
+Wearable biomedical devices increasingly require on-device privacy guarantees through Zero-Knowledge Proofs~(ZKPs), yet the underlying cryptographic kernels, based on modular exponentiation over prime fields, far exceed what low-power microcontrollers can deliver. Coarse-Grained Reconfigurable Arrays~(CGRAs) offer near-ASIC efficiency with the reprogrammability needed to track evolving ZKP standards, but programming them requires cycle-by-cycle scheduling across a spatial processing-element mesh.
 %
-We present \castm{}, a \textit{CGRA API} \& \textit{Spatial Temporal Mapper} for the OpenEdgeCGRA architecture. \castm{} preserves explicit spatial-temporal control while raising the abstraction level through structured abstractions and architecture-aware operators that encapsulate recurring modular-arithmetic idioms. For the S-box layer, a key component of the popular ZKP-friendly hash function Poseidon2, \castm{} achieves \timex{\MetricSboxCastmSpeedupVsManual} speedup w.r.t.\ the hand-optimized version while reducing source code by approximately \timex{\MetricLocCompressionVsManual}.
-We also identify that for long ZKP kernels multi-batch configuration reload is the dominant bottleneck, and show that increasing the Configuration Register File from 32 to 512 entries (+\pct{\MetricCrfFullFitAreaPct} FPGA area) allow us to deploy the full Poseidon2 kernel on the CGRA achieving \timex{\MetricMerkleOffloadProjectedSpeedup} speedup and \MetricMerkleOffloadEnergySavingsPct\% of energy savings over a ultra-low power RISC-V CPU core.
+We present an efficient spatial-temporal mapping of the S-box layer ($x^7 \Mod p$, BabyBear) of the ZKP-friendly hash function Poseidon2 onto the OpenEdgeCGRA architecture, a $4{\times}4$ toroidal PE mesh. The mapping leverages the mesh topology to perform Barrett modular reduction entirely through inter-PE communication, reducing the memory-access stalls that limit naive approaches. Through subroutine reuse of the Barrett reduction phase, fall-through chaining, and instruction merging across PEs, the S-box kernel achieves \timex{\MetricSboxCastmSpeedupVsManual} speedup w.r.t.\ a hand-optimized flat schedule and \timex{\MetricSboxCompigraSlowdownVsCastm} over an automatic compiler.
+We also identify that for long ZKP kernels multi-batch configuration reload is the dominant bottleneck, and show that increasing the Configuration Register File from 32 to 512 entries (+\pct{\MetricCrfFullFitAreaPct} FPGA area) enables deploying the full Poseidon2 kernel on the CGRA, achieving \timex{\MetricMerkleOffloadProjectedSpeedup} speedup and \MetricMerkleOffloadEnergySavingsPct\% energy savings over an ultra-low power RISC-V CPU core.
 \end{abstract}
 
 \begin{keywords}
