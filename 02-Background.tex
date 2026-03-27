@@ -1,25 +1,6 @@
 %!TEX root = main.tex
 \section{Background and Related Work}
 \label{sec:background}
-
-\subsection{OpenEdgeCGRA Architecture}
-\label{subsec:cgra-basics}
-
-Coarse Grained Reconfigurable Arrays (CGRAs) are primarily composed of an array of interconnected
-PEs (or Reconfigurable Cells --RCs--) that can be configured dynamically to implement a variety of computational tasks. The PEs are connected through a fixed interconnect, executing in lockstep under a configuration bitstream loaded before kernel execution~\cite{cgra-survey}. Each PE contains a word-width ALU, a small register file, and neighbor connections. Unlike FPGAs (bit-level reconfiguration, high overhead), CGRAs reconfigure at the instruction level with microsecond latency.
-
-OpenEdgeCGRA~\cite{openedge-cgra} provides: \textit{(i)} a $4\times4$ toroidal mesh of PEs (i.e 16 PEs),  where column~3 wraps to column~0 and row~3 to row~0, giving maximum distance of 4 hops between any two PEs; \textit{(ii)} per-PE resources including a 32-bit ALU (1~clock cycle), $32\!\times\!32$ multiplier (3~clock cycles), four registers (R0--R3), output register ROUT visible to neighbors, and branchless select instructions (BSFA/BZFA); \textit{(iii)} shared scratchpad SRAM with 2-cycle latency (one access/column/cycle) organized as 4 interleaved banks; and \textit{(iv)} tight coupling with a RISC-V host core (X-HEEP~\cite{xheep}). At SoC level, we consider two host-to-memory organizations. The simpler one-to-many path (\textit{OneToM}) forces host and accelerator traffic to share a common route to memory, whereas the richer \textit{N:M} crossbar sustains more parallel access to the interleaved SRAM banks. As a result, \textit{OneToM} incurs more serialization and contention, while \textit{N:M} reduces memory-induced stalls.
-
-\textbf{Configuration and execution model.} A kernel is encoded as a sequence of 32-bit \emph{configuration words}---one per PE per cycle---stored in a Configuration Register File (CRF) with $D$ entries per column---32 entries in our baseline CGRA. Before dispatch, the host CPU writes configuration words into an SRAM backing store called the \emph{Context Memory} (CMEM) via memory-mapped I/O (MMIO). During execution, each column's program counter advances through CRF entries in lockstep, dispatching one instruction per PE. When a kernel exceeds the CRF capacity, the host must reload the CMEM with the next batch of instructions before the CGRA can resume---a transparent but costly operation whose implications are analyzed in Section~\ref{subsec:creg-analysis}.
-
-\subsection{CGRA Programming: Limitations for ZKP Workloads}
-\label{subsec:cgra-programming}
-
-\textbf{Manual scheduling} requires placing instructions among $NB$ bundles of PEs slots,
-satisfying data dependencies, multi-cycle latencies, memory-port arbitration, and register pressure---producing CSV files of $\sim$4{,}750 lines for our main kernel, with errors detectable only through simulation.
-
-\noindent \textbf{Automatic compilers} (Compigra~\cite{compigra}, Wang et al.~\cite{wang2025mlir}) accept C code and use heuristic placement, working well for regular DSP kernels but encountering structural limitations for cryptographic modular arithmetic (our use case): (1)~multi-precision limb decomposition is invisible at the C level; (2)~toroidal routing patterns have no C-level representation; (3)~architectural primitives like BSFA (\textit{Branch/Select on Flag A}, a branchless correction needed in our main kernel) are inaccessible; and (4)~heuristic scheduling forfeits cycle-count predictability needed for real-time ZKP functions.
-
 \subsection{Poseidon2 S-box Exponentiation}
 \label{subsec:poseidon2}
 
@@ -38,26 +19,27 @@ For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon
     sbox/.style={box, fill=cgrared!15},
     mds/.style={box, fill=cgrablue!15},
     rc/.style={box, fill=cgragreen!15},
-    arr/.style={-{Stealth[length=4pt]}, thick},
+    arr/.style={-{Stealth[length=2.8pt,width=2.8pt]}, line width=0.60pt, draw=black!80},
+    trans_arr/.style={-{Stealth[length=5.2pt,width=5.2pt]}, line width=0.95pt, draw=black!85, shorten <=0pt, shorten >=0pt},
     lbl/.style={font=\scriptsize\sffamily, text=cgragray},
     group_label/.style={font=\footnotesize\sffamily\bfseries}
 ]
 
 % --- DEFINICIÓN ESPACIAL (Nodos) ---
-\node[on chain, font=\footnotesize\sffamily, inner sep=2pt] (inp) {state};
+\node[on chain, font=\footnotesize\sffamily, inner sep=2pt, xshift=0.06cm] (inp) {state};
 
 \node[sbox] (sb1) {S-box};
 \node[mds]  (m1)  {MDS};
 \node[rc]   (r1)  {$+c_i$};
 
-\node[sbox] (sb2) {S-box};
+\node[sbox, xshift=0.14cm] (sb2) {S-box};
 \node[mds]  (m2)  {MDS};
 \node[rc]   (r2)  {$+c_i$};
 
-\node[sbox] (sb3) {S-box};
+\node[sbox, xshift=0.14cm] (sb3) {S-box};
 \node[mds]  (m3)  {MDS};
 
-\node[on chain, font=\footnotesize\sffamily, inner sep=2pt] (out) {out};
+\node[on chain, font=\footnotesize\sffamily, inner sep=2pt, xshift=-0.06cm] (out) {out};
 
 
 % --- ENRUTADO (Conexiones) ---
@@ -65,11 +47,11 @@ For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon
 \draw[arr] (sb1) -- (m1);
 \draw[arr] (m1)  -- (r1);
 
-\draw[arr] (r1)  -- node[above, lbl] {$\cdots$} (sb2);
+\draw[trans_arr] (r1.east) -- node[above=6pt, lbl] {$\cdots$} (sb2.west);
 \draw[arr] (sb2) -- (m2);
 \draw[arr] (m2)  -- (r2);
 
-\draw[arr] (r2)  -- node[above, lbl] {$\cdots$} (sb3);
+\draw[trans_arr] (r2.east) -- node[above=6pt, lbl] {$\cdots$} (sb3.west);
 \draw[arr] (sb3) -- (m3);
 \draw[arr] (m3)  -- (out);
 
@@ -89,6 +71,45 @@ For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon
 \caption{Poseidon2 permutation structure. The S-box ($x^d \Mod p$) dominates cost.}
 \label{fig:poseidon2-structure}
 \end{figure}
+
+Algorithm~\ref{alg:barrett} shows the pseudocode for the S-box layer.
+
+\begin{algorithm}[t]
+\caption{S-box $x^7 \bmod p$ on the 4$\times$4 CGRA}\label{alg:barrett}
+\begin{algorithmic}[1]
+\footnotesize
+\Require $x \in [0, p)$, precomputed $\mu = \lfloor 2^{2k}/p \rfloor$
+\Ensure $x^7 \bmod p$
+\For{$\mathit{op} \in \{\mathrm{sq}_1, \mathrm{mul}_1, \mathrm{sq}_2, \mathrm{mul}_2\}$}
+	\State $\mathit{limbs} \gets \Call{ExtractBytes}{\mathit{operands}}$ \Comment{16 PEs parallel}
+	\State $\mathit{prod} \gets \Call{MeshMultiply}{\mathit{limbs}}$ \Comment{systolic 4$\times$4}
+	\State $\hat{q} \gets \Call{EstimateQuotient}{\mathit{prod}, \mu}$ \Comment{12 PEs + carry}
+	\State $r \gets \mathit{prod} - \hat{q} \cdot p$ \Comment{parallel subtract}
+	\State $\mathit{result} \gets \Call{Select}{r < p,\; r,\; r - p}$ \Comment{BSFA: 1 cycle}
+\EndFor
+\State \Return $\mathit{result}$
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{OpenEdgeCGRA Architecture}
+\label{subsec:cgra-basics}
+
+Coarse Grained Reconfigurable Arrays (CGRAs) are primarily composed of an array of interconnected
+PEs (or Reconfigurable Cells --RCs--) that can be configured dynamically to implement a variety of computational tasks. The PEs are connected through a fixed interconnect, executing in lockstep under a configuration bitstream loaded before kernel execution~\cite{cgra-survey}. Each PE contains a word-width ALU, a small register file, and neighbor connections. Unlike FPGAs (bit-level reconfiguration, high overhead), CGRAs reconfigure at the instruction level with microsecond latency.
+
+OpenEdgeCGRA~\cite{openedge-cgra} provides: \textit{(i)} a $4\times4$ toroidal mesh of PEs (i.e 16 PEs),  where column~3 wraps to column~0 and row~3 to row~0, giving maximum distance of 4 hops between any two PEs; \textit{(ii)} per-PE resources including a 32-bit ALU (1~clock cycle), $32\!\times\!32$ multiplier (3~clock cycles), four registers (R0--R3), output register ROUT visible to neighbors, and branchless select instructions (BSFA/BZFA); \textit{(iii)} shared scratchpad SRAM with 2-cycle latency (one access/column/cycle) organized as 4 interleaved banks; and \textit{(iv)} tight coupling with a RISC-V host core (X-HEEP~\cite{xheep}). At SoC level, we consider two host-to-memory organizations. The simpler one-to-many path (\textit{OneToM}) forces host and accelerator traffic to share a common route to memory, whereas the richer \textit{N:M} crossbar sustains more parallel access to the interleaved SRAM banks. As a result, \textit{OneToM} incurs more serialization and contention, while \textit{N:M} reduces memory-induced stalls.
+
+\textbf{Configuration and execution model.} A kernel is encoded as a sequence of 32-bit \emph{configuration words}---one per PE per cycle---stored in a Configuration Register File (CRF) with $D$ entries per column---32 entries in our baseline CGRA. Before dispatch, the host CPU writes configuration words into an SRAM backing store called the \emph{Context Memory} (CMEM) via memory-mapped I/O (MMIO). During execution, each column's program counter advances through CRF entries in lockstep, dispatching one instruction per PE. When a kernel exceeds the CRF capacity, the host must reload the CMEM with the next batch of instructions before the CGRA can resume---a transparent but costly operation whose implications are analyzed in Section~\ref{subsec:creg-analysis}.
+
+\subsection{CGRA Programming: Limitations for ZKP Workloads}
+\label{subsec:cgra-programming}
+
+\textbf{Manual scheduling} requires placing instructions among $NB$ bundles of PEs slots,
+satisfying data dependencies, multi-cycle latencies, memory-port arbitration, and register pressure---producing CSV files of $\sim$4{,}750 lines for our main kernel, with errors detectable only through simulation.
+
+\noindent \textbf{Automatic compilers} (Compigra~\cite{compigra}, Wang et al.~\cite{wang2025mlir}) accept C code and use heuristic placement, working well for regular DSP kernels but encountering structural limitations for cryptographic modular arithmetic (our use case): (1)~multi-precision limb decomposition is invisible at the C level; (2)~toroidal routing patterns have no C-level representation; (3)~architectural primitives like BSFA (\textit{Branch/Select on Flag A}, a branchless correction needed in our main kernel) are inaccessible; and (4)~heuristic scheduling forfeits cycle-count predictability needed for real-time ZKP functions.
+
 
 \subsection{Related Work}
 \label{subsec:related-hw}
