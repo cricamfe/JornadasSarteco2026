@@ -204,6 +204,8 @@ In our case, two 31-bit operands $a$ and $b$ are decomposed into four 8-bit limb
 
 This pattern generalizes to any field width: for a 64-bit field (e.g., Goldilocks) one would use 16-bit limbs on the same $4\!\times\!4$ mesh, or 8-bit limbs on a larger array. The mesh dimensions naturally match the number of limbs, making the CGRA topology a first-class design parameter rather than an afterthought. For squaring ($a = b$), the symmetry $a_i \cdot a_j = a_j \cdot a_i$ allows the accumulation phase to fold off-diagonal pairs via in-place doubling, reducing accumulation from 13 to 8~bundles compared to general multiplication.
 
+\input{figures/figure_mapping.tex}
+
 \subsubsection{Toroidal Carry Propagation}
 \label{subsubsec:carry-chain}
 
