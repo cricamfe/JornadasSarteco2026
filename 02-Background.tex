@@ -96,7 +96,7 @@ Algorithm~\ref{alg:barrett} shows the pseudocode for the S-box layer, which is b
     \State $\mathit{prod} \gets \Call{Multiply}{a,b}$ \Comment{Step1: Base Product}
     \State $\hat{q} \gets \Call{QuotientEst}{\mathit{prod}, \mu}$ \Comment{Step2: Quotient Est.}
     \State $r \gets \mathit{prod} - \hat{q}\cdot p$ \Comment{Step3: Mod. Substract.}
-    \State \Return $\Call{Select}{r<p,\ r,\ r-p}$ \Comment{Step4: Correction}
+    \State \Return $\Call{Select}{r < p,\ r,\ r-p}$ \Comment{Step4: Correction}
 \EndFunction
 %\\ \Return $x^7$
 \end{algorithmic}
