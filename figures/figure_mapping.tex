@@ -59,10 +59,12 @@
              font=\scriptsize, inner sep=0pt,
              outer sep=0pt, anchor=center},
   act/.style={pe, fill=black!55, text=white,
-             text height=1.2ex, text depth=0.3ex},
+             font=\fontsize{5.5}{5.7}\selectfont,
+             text width=6.6mm, align=center,
+             text height=1.1ex, text depth=0.25ex},
   mid/.style={pe, fill=black!14},
   idl/.style={pe, fill=white, text=black!30},
-  carry/.style={->, >=stealth, line width=1.0pt, black!90,
+  carry/.style={-{Triangle[length=5pt,width=5pt]}, line width=1.0pt, black,
                shorten <=5pt, shorten >=5pt},
   dataup/.style={->, >=latex, line width=0.6pt, black!90,
                  shorten <=1pt, shorten >=1pt},
@@ -83,9 +85,9 @@
 \foreach \r in {0,...,3}
   \node[lbl, anchor=east] at (-0.30, -\r*\sp) {r\r};
 % Row 0 — carry chain
-\node[act] (c00) at (0*\sp, 0) {$>>16$};
-\node[act] (c01) at (1*\sp, 0) {+carry};
-\node[act] (c02) at (2*\sp, 0) {+carry};
+\node[act] (c00) at (0*\sp, 0) {$>\!>\!16$};
+\node[act] (c01) at (1*\sp, 0) {\makecell{+\\carry}};
+\node[act] (c02) at (2*\sp, 0) {\makecell{+\\carry}};
 \node[act] (c03) at (3*\sp, 0) {BSFA};
 % Row 1
 \node[mid] (c10) at (0*\sp,-1*\sp) {$\hat{q}\mu_0$};
@@ -104,10 +106,10 @@
 \node[idl] (c33) at (3*\sp,-3*\sp) {idle};
 % RCL badge above row 0
 \node[badge] at (1.5*\sp, 0.30) {RCL carry chain};
-% Carry chain arrows
-\draw[carry] ([xshift=6pt]c00.east) -- ([xshift=6pt]c01.west);
-\draw[carry] ([xshift=6pt]c01.east) -- ([xshift=6pt]c02.west);
-\draw[carry] ([xshift=6pt]c02.east) -- ([xshift=6pt]c03.west);
+% Carry chain arrows kept inside row 0, above the text baseline.
+\draw[carry, black] ([xshift=8pt, yshift=0pt]c00.east) -- ([xshift=6pt, yshift=0pt]c01.west);
+\draw[carry, black] ([xshift=8pt, yshift=0pt]c01.east) -- ([xshift=6pt, yshift=0pt]c02.west);
+\draw[carry, black] ([xshift=8pt, yshift=0pt]c02.east) -- ([xshift=6pt, yshift=0pt]c03.west);
 % Vertical arrows (rows 1→0)
 \foreach \c in {0,...,3}
   \draw[dataup] (c1\c.north) -- (c0\c.south);

@@ -150,8 +150,8 @@ Fig.~\ref{fig:barrett-structure} now shows how the 4-steps Barrett multiplicatio
 
 
 
-\begin{figure}[hbt]
-\begin{lstlisting}[caption={S-box kernel for $x^7 \Mod p$ (key excerpts). \texttt{RCR/RCL/RCT/RCB} denote \textit{Read Cell Right, Left, Top, Bottom}.}, label={lst:sbox-kernel}, breaklines=false, basicstyle=\ttfamily\fontsize{7}{8.4}\selectfont, columns=fullflexible, xleftmargin=2mm]
+\noindent\begin{minipage}{\columnwidth}
+\begin{lstlisting}[caption={S-box kernel for $x^7 \Mod p$ (key excerpts). \texttt{RCR/RCL/RCT/RCB} denote \textit{Read Cell Right, Left, Top, Bottom}.}, label={lst:sbox-kernel}, breaklines=false, basicstyle=\ttfamily\fontsize{7}{7.7}\selectfont, columns=fullflexible, xleftmargin=1.5mm, numbersep=5pt, aboveskip=3pt, belowskip=1pt]
 kernel "SBox" {
  // Main: set return addr, jump to subrC
  bundle { @0,1: goto subrC;
@@ -181,7 +181,7 @@ kernel "SBox" {
  bundle { @3,0: goto R3; } //(*@\textcolor{cgragreen!70!black}{$\,\triangleright$ return}@*)
 }
 \end{lstlisting}
-\end{figure}
+\end{minipage}
 
 
 

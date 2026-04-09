@@ -132,6 +132,17 @@
 \newcommand{\kpermperj}[1]{#1~kperm/J}
 \newcommand{\mw}[1]{#1\,mW}
 
+\makeatletter
+\let\castmoldthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{%
+  \castmoldthebibliography{#1}%
+  \footnotesize
+  \setlength{\itemsep}{0pt}%
+  \setlength{\parskip}{0pt}%
+  \setlength{\parsep}{0pt}%
+}
+\makeatother
+
 % Centralized paper metrics layer.
 \input{paper_metrics_manual}
 \input{generated/paper_metrics_auto}
