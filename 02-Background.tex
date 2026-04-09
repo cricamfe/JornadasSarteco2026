@@ -72,25 +72,56 @@ For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon
 \label{fig:poseidon2-structure}
 \end{figure}
 
-Algorithm~\ref{alg:barrett} shows the pseudocode for the S-box layer.
+Algorithm~\ref{alg:barrett} shows the pseudocode for the S-box layer, which is based on the modular Barrett multiplication~\cite{barrett1986} (\texttt{MULBARRET()}). We will go through this  code in more detail in  Section~\ref{subsec:sbox-openedge}
 
-\begin{algorithm}[t]
-\caption{S-box $x^7 \Mod p$ on the 4$\times$4 CGRA}\label{alg:barrett}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+\begin{algorithm}
+\caption{S-box $x^7 \Mod p$}\label{alg:barrett}
 \begin{algorithmic}[1]
 \footnotesize
-\Require $x \in [0, p)$, precomputed $\mu = \lfloor 2^{2k}/p \rfloor$
-\Ensure $x^7 \bmod p$
-\For{$\mathit{op} \in \{\mathrm{sq}_1, \mathrm{mul}_1, \mathrm{sq}_2, \mathrm{mul}_2\}$}
-	\State $\mathit{limbs} \gets \Call{ExtractBytes}{\mathit{operands}}$ \Comment{16 PEs parallel}
-	\State $\mathit{prod} \gets \Call{MeshMultiply}{\mathit{limbs}}$ \Comment{systolic 4$\times$4}
-	\State $\hat{q} \gets \Call{EstimateQuotient}{\mathit{prod}, \mu}$ \Comment{12 PEs + carry}
-	\State $r \gets \mathit{prod} - \hat{q} \cdot p$ \Comment{parallel subtract}
-	\State $\mathit{result} \gets \Call{Select}{r < p,\; r,\; r - p}$ \Comment{BSFA: 1 cycle}
-\EndFor
-\State \Return $\mathit{result}$
+\Require $x \in [0,p)$, and $\mu = \lfloor 2^{2n}/p \rfloor$, $n=\lceil log_2(p-1) \rceil$
+\Ensure $x^7 \Mod p$
+\State $x^2 \gets \Call{MulBarrett}{x, x}$
+\State $x^3 \gets \Call{MulBarrett}{x_2, x}$      
+\State $x^4 \gets \Call{MulBarrett}{x_2, x_2}$
+\State $x^7 \gets \Call{MulBarrett}{x_4, x_3}$
+%\State \Return $x_7$
+%\end{algorithmic}
+
+%\begin{algorithmic}[1]
+\footnotesize
+\Function{MulBarrett}{$a,b$}
+    \State $\mathit{prod} \gets \Call{Multiply}{a,b}$ \Comment{Step1: Base Product}
+    \State $\hat{q} \gets \Call{QuotientEst}{\mathit{prod}, \mu}$ \Comment{Step2: Quotient Est.}
+    \State $r \gets \mathit{prod} - \hat{q}\cdot p$ \Comment{Step3: Mod. Substract.}
+    \State \Return $\Call{Select}{r<p,\ r,\ r-p}$ \Comment{Step4: Correction}
+\EndFunction
+%\\ \Return $x^7$
 \end{algorithmic}
+
 \end{algorithm}
 
+
+
+% \begin{algorithm}[t]
+% \caption{S-box $x^7 \Mod p$ on the 4$\times$4 CGRA}\label{alg:barrett}
+% \begin{algorithmic}[1]
+% {\footnotesize
+% \Require $x_1, x_2 \in [0, p)$, precomputed $\mu = \lfloor 2^{2k}/p \rfloor$
+% \Ensure $x^7 \bmod p$
+% \For{$\mathit{op} \in \{\mathrm{sq}_1, \mathrm{mul}_1, \mathrm{sq}_2, \mathrm{mul}_2\}$}
+% %	\State $\mathit{limbs} \gets \Call{ExtractBytes}{\mathit{op}}$ \Comment{Step1: Base Product}
+% %	\State $\mathit{prod} \gets \Call{MeshMultiply}{\mathit{limbs}}$ \Comment{16 PEs in parallel}
+%     \State $\mathit{prod} \gets \Call{MeshMultiply}{\mathit{op}}$ \Comment{Step1: Base Product}
+% 	\State $\hat{q} \gets \Call{EstimateQuotient}{\mathit{prod}, \mu}$ \Comment{Step2: Quot. Est.}
+% 	\State $r \gets \mathit{prod} - \hat{q} \cdot p$ \Comment{Step3: Mod. Subst.}
+% 	\State $\mathit{result} \gets \Call{Select}{r < p,\; r,\; r - p}$ \Comment{Step4: Correct.}
+% \EndFor
+% \State \Return $\mathit{result}$}
+% \end{algorithmic}
+% \end{algorithm}
 
 \subsection{OpenEdgeCGRA Architecture}
 \label{subsec:cgra-basics}
@@ -98,7 +129,7 @@ Algorithm~\ref{alg:barrett} shows the pseudocode for the S-box layer.
 Coarse Grained Reconfigurable Arrays (CGRAs) are primarily composed of an array of interconnected
 PEs (or Reconfigurable Cells --RCs--) that can be configured dynamically to implement a variety of computational tasks. The PEs are connected through a fixed interconnect, executing in lockstep under a configuration bitstream loaded before kernel execution~\cite{cgra-survey}. Each PE contains a word-width ALU, a small register file, and neighbor connections. Unlike FPGAs (bit-level reconfiguration, high overhead), CGRAs reconfigure at the instruction level with microsecond latency.
 
-OpenEdgeCGRA~\cite{openedge-cgra} provides: \textit{(i)} a $4\times4$ toroidal mesh of PEs (i.e 16 PEs),  where column~3 wraps to column~0 and row~3 to row~0, giving maximum distance of 4 hops between any two PEs; \textit{(ii)} per-PE resources including a 32-bit ALU (1~clock cycle), $32\!\times\!32$ multiplier (3~clock cycles), four registers (R0--R3), output register ROUT visible to neighbors, and branchless select instructions (BSFA/BZFA); \textit{(iii)} shared scratchpad SRAM with 2-cycle latency (one access/column/cycle) organized as 4 interleaved banks; and \textit{(iv)} tight coupling with a RISC-V host core (X-HEEP~\cite{xheep}). At SoC level, we consider two host-to-memory organizations. The simpler one-to-many path (\textit{OneToM}) forces host and accelerator traffic to share a common route to memory, whereas the richer \textit{N:M} crossbar sustains more parallel access to the interleaved SRAM banks. As a result, \textit{OneToM} incurs more serialization and contention, while \textit{N:M} reduces memory-induced stalls.
+OpenEdgeCGRA~\cite{openedge-cgra} provides: \textit{(i)} a $4\times4$ toroidal mesh of PEs (i.e 16 PEs),  where column~3 wraps to column~0 and row~3 to row~0, giving maximum distance of 4 hops between any two PEs; \textit{(ii)} per-PE resources including a 32-bit ALU (1~clock cycle), $32\!\times\!32$ multiplier (3~clock cycles), four registers (R0--R3), output register ROUT visible to neighbors, and branchless select instructions (BSFA/BZFA); \textit{(iii)} shared scratchpad SRAM with 2-cycle latency (one access/column/cycle) organized as 4 interleaved banks; and \textit{(iv)} tight coupling with a RISC-V host core (X-HEEP~\cite{xheep}). At SoC level, we consider two host-to-memory organizations. The simpler \textit{OneToM} (One-to-Many) path forces host and accelerator traffic to share a common route to memory, whereas the richer \textit{N:M} crossbar sustains more parallel access to the interleaved SRAM banks. As a result, \textit{OneToM} incurs more serialization and contention, while \textit{N:M} reduces memory-induced stalls.
 
 \textbf{Configuration and execution model.} A kernel is encoded as a sequence of 32-bit \emph{configuration words}---one per PE per cycle---stored in a Configuration Register File (CRF) with $D$ entries per column---32 entries in our baseline CGRA. Before dispatch, the host CPU writes configuration words into an SRAM backing store called the \emph{Context Memory} (CMEM) via memory-mapped I/O (MMIO). During execution, each column's program counter advances through CRF entries in lockstep, dispatching one instruction per PE. When a kernel exceeds the CRF capacity, the host must reload the CMEM with the next batch of instructions before the CGRA can resume---a transparent but costly operation whose implications are analyzed in Section~\ref{subsec:creg-analysis}.
 
@@ -116,7 +147,7 @@ satisfying data dependencies, multi-cycle latencies, memory-port arbitration, an
 
 Table~\ref{tab:related-work} positions our contribution relative to existing ZKP hardware accelerators.
 PipeZK~\cite{pipezk} proposes an ASIC pipeline for MSM (\textit{Multi-Scalar Multiplication}) and NTT (\textit{Number Theoretic Transform}), which
-are the two most time-consuming computational primitives for generating Zero-Knowledge Proofs (zk-SNARKs), but it does not address ZK-friendly hashing. AMAZE~\cite{amaze} implements MiMC (a ZK-friendly hash function) on FPGA with fixed RTL, achieving $13\times$ over CPU. HashEmAll~\cite{hashemall} provides FPGA-optimized cores for Rescue-Prime, Griffin, and Reinforced Concrete (up to $23\times$ over CPU on BN254), yet it targets different hash families than Poseidon2. TRIDENT~\cite{trident} accelerates the original Poseidon~\cite{poseidon} on FPGA for BLS12-381 (Filecoin).
+are the two most time-consuming computational primitives for generating zk-SNARKs (a type of Zero-Knowledge Proofs), but it does not address ZK-friendly hashing. AMAZE~\cite{amaze} implements MiMC (a ZK-friendly hash function) on FPGA with fixed RTL, achieving $13\times$ over CPU. HashEmAll~\cite{hashemall} provides FPGA-optimized cores for Rescue-Prime, Griffin, and Reinforced Concrete (up to $23\times$ over CPU on BN254), yet it targets different hash families than Poseidon2. TRIDENT~\cite{trident} accelerates the original Poseidon~\cite{poseidon} on FPGA for BLS12-381 (Filecoin).
 
 Although FPGAs are inherently reprogrammable platforms, the accelerators listed above implement their arithmetic pipelines as fixed RTL designs optimized for a specific prime field and hash function. Adapting them to a different field (e.g., from BLS12-381 to BabyBear) or a different hash (e.g., from MiMC to Poseidon2) would require modifying the HDL source, re-running synthesis and place-and-route, and generating a new bitstream---a process that takes minutes to hours and demands hardware design expertise. A CGRA operates at a different abstraction level: the hardware (ALUs, registers, interconnect) remains fixed, and switching to a new kernel amounts to loading a new instruction configuration via DMA, completing in microseconds with no hardware re-synthesis. This distinction is particularly relevant for wearable ZKP devices, where the proof system may evolve (new field, new exponent, new hash) and the device must adapt through a software update rather than FPGA re-flashing.
 
@@ -133,7 +164,7 @@ The ``Reprog.'' column reflects the cost of switching to a different hash or fie
 \setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}lllll@{}}
 \toprule
-\textbf{Work} & \textbf{Platf.} & \textbf{Primitive} & \textbf{Field} & \textbf{Reprog.} \\
+\textbf{Work} & \textbf{Platf.} & \textbf{Hash} & \textbf{Field} & \textbf{Reprog.} \\
 \midrule
 PipeZK~\cite{pipezk} & ASIC & MSM+NTT & BN254 & Fabr. \\
 AMAZE~\cite{amaze} & FPGA & MiMC & BN254 & RTL \\

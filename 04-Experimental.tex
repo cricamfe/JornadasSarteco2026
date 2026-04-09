@@ -15,7 +15,7 @@ onto the CGRA:
 (3)~\castm{}, our approach.
 Table~\ref{tab:sbox-comparison} summarizes the ESL-measured results; Fig.~\ref{fig:sbox-comparison} presents a visual comparison along with the estimated energy per invocation~\cite{Aspros_2025}.
 
-\begin{table}[t]
+\begin{table}[hbt]
 \caption{S-box kernel: comparison of compilation approaches under ESL-CGRA simulation.
 $NB$: number of compiled bundles; $CC$: clock cycles including stalls;
 Disp.: number of CGRA dispatches; Idle (\%): idle-PE ratio, summarized as a bundle-wise geometric mean.}
@@ -41,7 +41,7 @@ Compigra   & \MetricSboxCompigraNB & \MetricSboxCompigraCC & \MetricSboxCompigra
 \end{figure}
 
 Energy per invocation combines the ESL-reported execution energy with the fixed dead-time cost incurred at each CGRA dispatch. This normalization is necessary because the three mappings differ not only in cycle count but also in execution granularity: without accounting for dispatch overhead, a fragmented schedule would understate the system-level cost of repeatedly launching and draining the accelerator.
-Idle (\%) in Table~\ref{tab:sbox-comparison} is reported as a bundle-wise geometric mean over per-bundle idle-PE ratios.
+Idle (\%) in Table~\ref{tab:sbox-comparison} is reported as a bundle-wise geometric mean over idle-PE per-bundle ratios.
 
 \textbf{Compigra cannot map S-box directly.}
 The automatic compiler's scheduling heuristic fails on the S-box kernel because Barrett reduction requires cross-PE carry chains and branchless conditional selects that exceed its mapping capabilities.
@@ -59,7 +59,7 @@ The Manual approach requires \lines{\MetricLocManual}; \castm{} requires \lines{
 This gap is structural: \castm{}'s parameterized functions and loop express the kernel once, whereas the hand-written schedule must spell out each PE-cycle placement explicitly, making coding slower and substantially more error-prone.
 
 \textbf{Code complexity.}
-Table~\ref{tab:halstead} quantifies complexity using Halstead active volume metric, $V_{\text{act}} = N \log_2 \eta$, where $N$ counts active (non-NOP) tokens~\cite{halstead1977}. We do not report Halstead effort because, for low-vocabulary ISA-level code, it can produce anomalous scaling~\cite{sinha2011}. Owing to explicit per-PE-per-cycle encoding, the Manual schedule reaches \timex{\MetricHalsteadManualRatio} the \texttt{C++} baseline. By absorbing spatial placement and NOP scheduling into the compiler, \castm{} reduces this to \timex{\MetricHalsteadCastmRatio}, corresponding to a \timex{\MetricHalsteadCompressionVsManual} compression factor relative to the Manual schedule. Ideally, Compigra could reduce this complexity to \timex{\MetricHalsteadCompigraRatio} the \texttt{C++} baseline, although at the cost of \timex{\MetricSboxCompigraSlowdownVsCastm} more cycles than \castm{} due to inefficient PE utilization as previously explained.
+Table~\ref{tab:halstead} quantifies complexity using Halstead active volume metric, $V_{\text{act}} = N \log_2 \eta$, where $N$ counts active (non-NOP) tokens~\cite{halstead1977}. We do not report Halstead effort because, for low-vocabulary ISA-level code, it can produce anomalous scaling~\cite{sinha2011}. Owing to explicit per-PE-per-cycle encoding, the Manual schedule expands \timex{\MetricHalsteadManualRatio} the \texttt{C++} baseline. By absorbing spatial placement and NOP scheduling into the compiler, \castm{} reduces this to \timex{\MetricHalsteadCastmRatio}, corresponding to a \timex{\MetricHalsteadCompressionVsManual} compression factor relative to the Manual schedule. Ideally, Compigra could reduce further this complexity to \timex{\MetricHalsteadCompigraRatio} the \texttt{C++} baseline, although at the cost of \timex{\MetricSboxCompigraSlowdownVsCastm} more cycles than \castm{} due to inefficient PE utilization as previously explained.
 
 % AUTO_HALSTEAD_TABLE_BEGIN
 \input{generated/tables/halstead_sbox_compigra}
@@ -71,7 +71,7 @@ Table~\ref{tab:halstead} quantifies complexity using Halstead active volume metr
 The S-box kernel also allow us to conduct a controlled sensitivity study for configuration residency. Two implementations bracket the design space: the \emph{Manual} kernel (\MetricSboxManualNB~bundles, flat layout) and the \emph{\castm{}} kernel (\MetricSboxCastmNB~bundles, jump-reuse with shared subroutines). Because the Manual kernel uses only sequential control flow, it can be split into independent sub-kernels at any CRF depth. The \castm{} kernel cannot: its register-indirect returns (\texttt{JUMP~R3}) require all \MetricSboxKernelResidentBundles~bundles to be simultaneously resident in the CRF.
 
 When a kernel of $NB$ bundles exceeds the CRF depth $D$, it must be partitioned into $K = \lceil NB/D \rceil$ sub-kernels. In HEEPsilon's default CMEM organization, each sub-kernel fills an entire memory bank, so every transition between sub-kernels forces the host to reload all configuration data. The overhead decomposes as:
-%
+
 {\small
 \[
   T_{\mathrm{ovh}} = \underbrace{\textstyle\sum_{i}(s_i\!+\!1)}_{\text{CRF load}} + \underbrace{4(K\!-\!1)}_{\text{controller}} + \underbrace{(K\!-\!1)(16D\!+\!16)}_{\text{CMEM reload}}
@@ -81,16 +81,16 @@ When a kernel of $NB$ bundles exceeds the CRF depth $D$, it must be partitioned 
 \noindent where the sum runs over the $K{-}1$ transitions ($s_i$ is the size of each reloaded sub-kernel). The first two terms---streaming instructions into the CRF and controller handshake cycles---are small. The CMEM reload term dominates: it transfers the full bank contents via MMIO, costing approximately $16NB$ cycles for a large $K$,
  nearly \emph{constant} regardless of $D$.
 
-At the default $D\!=\!\MetricCrfDefaultDepth$, the Manual kernel loses \pct{\MetricCrfManualDefaultOHPct} of its cycles due to reload overhead ($K\!=\!\MetricCrfManualDefaultK$); doubling or quadrupling $D$ barely helps because the total data volume stays proportional to $NB$. Overhead only vanishes when the entire kernel fits ($K\!=\!1$): this happens for $D\!=\!\MetricCrfDepthFullFit$ in Manual, and $D\!=\!\MetricCrfDepthOneTwentyEight$ in \castm{}. The $5.6\times$ bundle compression from Manual to \castm{} (\MetricSboxManualNB$\to$\MetricSboxCastmNB) now translates into a $4\times$ reduction in CRF requirement, at the cost of \pct{\MetricCrfOneTwentyEightAreaPct} additional area for $D=128$ vs. \pct{\MetricCrfFullFitAreaPct} for $D=512$ (i.e. +\MetricCrfOneTwentyEightExtraFlipFlops~flip-flops vs. +\MetricCrfFullFitExtraFlipFlops~flip-flops on Artix-7 XC7A200T~\cite{xheep}). However, this comes with a rigidity constraint: for any $D < \MetricSboxCastmNB$, the \castm{} kernel cannot execute at all.
+At the default $D\!=\!\MetricCrfDefaultDepth$, the Manual kernel loses \pct{\MetricCrfManualDefaultOHPct} of its cycles due to reload overhead ($K\!=\!\MetricCrfManualDefaultK$); doubling or quadrupling $D$ barely helps because the total data volume stays proportional to $NB$. Overhead only vanishes when the entire kernel fits ($K\!=\!1$): this happens for $D\!=\!\MetricCrfDepthFullFit$ in Manual, and $D\!=\!\MetricCrfDepthOneTwentyEight$ in \castm{}. The $5.6\times$ bundle compression from Manual to \castm{} (\MetricSboxManualNB$\to$\MetricSboxCastmNB) now translates into a $4\times$ reduction in CRF requirement, at the cost of \pct{\MetricCrfOneTwentyEightAreaPct} additional area for $D=128$ vs. \pct{\MetricCrfFullFitAreaPct} for $D=512$ (i.e. +\MetricCrfOneTwentyEightExtraFlipFlops~flip-flops vs. +\MetricCrfFullFitExtraFlipFlops~flip-flops on Artix-7 XC7A200T~\cite{xheep}, respectively). However, this comes with a rigidity constraint: for any $D < \MetricSboxCastmNB$, the \castm{} kernel cannot execute at all.
 
 \subsection{Poseidon2: RTL Validation}
 \label{subsec:rtl-poseidon2}
 
 The S-box CRF-pressure analysis above showed that, for long ZKP kernels, configuration fragmentation and reload overhead dominate before arithmetic throughput can become visible. The full Poseidon2 kernel (366~bundles) requires $D\!=\!\MetricCrfDepthFullFit$ to fit without partitioning.
- Under that condition, we analyze three deployment options when running a batch of Poseidon2 hashes: a \textit{CPU-only} reference that executes all the hashes on the CPU, a \textit{CGRA-only} version that offloads all the hashes to the CGRA, and a \textit{CPU+CGRA} implementation, which evenly launches the hashes concurrently on the CPU and the CGRA. Both \textit{CGRA-only} and \textit{CPU+CGRA} keep the full Poseidon2 kernel on the accelerator.
+ Under that condition, we analyze three deployment options when running a batch of Poseidon2 hashes: a \textit{CPU-only} reference that executes all the hashes on the CPU, a \textit{CGRA-only} version that offloads all the hashes to the CGRA, and a \textit{CPU+CGRA} implementation, which evenly launches the hashes concurrently on the CPU and the CGRA. Both \textit{CGRA-only} and \textit{CPU+CGRA} keep the full Poseidon2 kernel on the accelerator. This evaluation is of interest for the case of Merkle tree computations~\cite{hashemall} when efficient and secure verification of a dataset based on Poseidon2 hashing is required.
 
 \begin{table}[!ht]
-\caption{Poseidon2: comparison of RTL metrics. T: Time ($\mu$s); Th: Throughput (hashes per sec.); Sp: Speedup; E: Energy ($\mu$J); ES: Energy Savings (\%).}
+\caption{Metrics for Poseidon2 kernel. T: Time ($\mu$s); Th: Throughput (hashes per sec.); Sp: Speedup; E: Energy ($\mu$J); ES: Energy Savings (\%).}
 \label{tab:rtl-performance}
 \centering
 \footnotesize

@@ -1,7 +1,7 @@
 % Figure 1: Spatial mapping of Barrett reduction onto the 4x4 CGRA
-\begin{figure}[t]
+\begin{figure}[hbt]
 \centering
-\subfloat[Partial-product diagonals\label{fig:mapping:products}]{%
+    \subfloat[Partial-product diagonals\label{fig:mapping:products}]{%
 \begin{tikzpicture}[
   pe/.style={draw=black!70, line width=0.5pt, rectangle,
              minimum width=7.2mm, minimum height=7.2mm,
@@ -83,7 +83,7 @@
 \foreach \r in {0,...,3}
   \node[lbl, anchor=east] at (-0.30, -\r*\sp) {r\r};
 % Row 0 — carry chain
-\node[act] (c00) at (0*\sp, 0) {>>16};
+\node[act] (c00) at (0*\sp, 0) {$>>16$};
 \node[act] (c01) at (1*\sp, 0) {+carry};
 \node[act] (c02) at (2*\sp, 0) {+carry};
 \node[act] (c03) at (3*\sp, 0) {BSFA};
@@ -130,7 +130,8 @@
 \end{tikzpicture}%
 }%
 \caption{Spatial mapping of Barrett reduction onto the 4$\times$4 CGRA.
-(a)~PE$(r,c)$ computes $a_r \times b_c$; shading marks partial-product diagonals ($k{=}r{+}c$), not communication hops.
+(a)~PE$(r,c)$ computes $a_r \cdot b_c$; shading marks partial-product diagonals ($k{=}r{+}c$), not communication hops.
 (b)~Row~0 implements the RCL carry chain, while dashed torus links bound quotient/carry travel to at most 4 hops.}
+
 \label{fig:mapping}
 \end{figure}

@@ -1,4 +1,4 @@
-\begin{figure*}[t]
+\begin{figure*}[hbt]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[>=Triangle, font=\sffamily]
@@ -77,8 +77,8 @@
     {subrC / subrB}
 
 \barrettbox{1}
-    {2-3. Estimation}
-    {$t \leftarrow (w \gg (n{-}1)) \cdot z$\\[0.3ex]$u \leftarrow (t \gg (n{+}1)) \cdot p$}
+    {2. Quotient Estimation}
+    {$t \leftarrow (w \gg (n{-}1)) \cdot \mu$\\[0.3ex]$u \leftarrow (t \gg (n{+}1)) \cdot p$}
     {MESH ROUTING}
     {Inter-PE data mov. via neighbor registers. Shifts as single-bundle ALU ops.}
     {\textcolor{cgragray}{// Quot. estimation: 12 PEs}\\[0.4ex]
@@ -86,7 +86,7 @@
     {subrA}
 
 \barrettbox{2}
-    {4. Mod Subtraction}
+    {3. Mod Subtraction}
     {$(w \Mod 2^{n+1}) - (u \Mod 2^{n+1})$}
     {EXPL. TRUNCATION}
     {Modulo $2^{n+1}$ via single-bundle AND masking \\(\texttt{R3 = R3 \& R2}). No division.}
@@ -95,7 +95,7 @@
     {subrA}
 
 \barrettbox{3}
-    {5-6. Correction}
+    {4. Correction}
     {$\mathbf{if}\ y > p\ \mathbf{then}\ y \leftarrow y - p$}
     {HW PREDICATION}
     {Branches stall pipelines. Executed via 1-bundle branchless multiplexer.}
@@ -111,7 +111,7 @@
 
 \end{tikzpicture}%
 }
-\caption{Barrett modular multiplication mapped onto the CGRA. Each box shows the mathematical operation (top), hardware strategy (middle), and \castm{} code excerpt (bottom).}
+\caption{Barrett multiplication mapped onto the CGRA. Each box shows the mathematical operation (top), hardware strategy (middle), and \castm{} code excerpt (bottom).}
 \label{fig:barrett-structure}
 \vspace{-0.4cm}
 \end{figure*}
