@@ -4,7 +4,7 @@
 \subsection{Poseidon2 S-box Exponentiation}
 \label{subsec:poseidon2}
 
-Poseidon2~\cite{poseidon2} is a ZKP-friendly hash function engineered to minimize finite-field multiplications per permutation, since each multiplication translates directly to proof-generation cost. Fig.~\ref{fig:poseidon2-structure} shows its round structure: it operates on a state $s = (s_0, s_1, s_2, \ldots, s_{t-1})$ of $t$ field elements through $R_F/2$ full rounds, then a $R_P$ partial round for cell $s_0$, and next $R_F/2$ full rounds again on $s$. Each round applies a S-box layer ($x \mapsto x^d \Mod p$), a linear {\textit Maximum Distance Separable} layer (MDS, a $t \times t$ matrix used to provide maximum diffusion), and a round-constant addition ($+c_i$, a standard feature to ensure each round behaves differently).
+Poseidon2~\cite{poseidon2} is a ZKP-friendly hash function engineered to minimize finite-field multiplications per permutation, since each multiplication translates directly to proof-generation cost. Fig.~\ref{fig:poseidon2-structure} shows its round structure: it operates on a state $s = (s_0, s_1, s_2, \ldots, s_{t-1})$ of $t$ field elements through $R_F/2$ full rounds, then a $R_P$ partial round for cell $s_0$, and next $R_F/2$ full rounds again on $s$. Each round applies a S-box layer ($x \mapsto x^d \Mod p$), a linear {\textit Maximum Distance Separable} layer (MDS, a $t \times t$ matrix used to provide maximum diffusion), and a round-constant addition ($+c_i$, a standard feature to ensure each round behaves differently); in partial rounds, the round constant and S-box apply only to $s_0$, followed by the internal matrix $MI$.
 For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon2 invokes $8 \times 16 + 13 = 141$ S-box evaluations, making the S-box layer over 90\% of total computation on a 32-bit CGRA.
 
 \begin{figure}[t]
@@ -18,6 +18,7 @@ For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon
     box/.style={draw, thick, inner sep=3pt, minimum height=0.55cm, font=\footnotesize\sffamily, rounded corners=2pt, on chain},
     sbox/.style={box, fill=cgrared!15},
     mds/.style={box, fill=cgrablue!15},
+    internal/.style={box, draw=cgrapurple!70!black, fill=cgrapurple!12},
     rc/.style={box, fill=cgragreen!15},
     arr/.style={-{Stealth[length=2.8pt,width=2.8pt]}, line width=0.60pt, draw=black!80},
     trans_arr/.style={-{Stealth[length=5.2pt,width=5.2pt]}, line width=0.95pt, draw=black!85, shorten <=0pt, shorten >=0pt},
@@ -28,50 +29,51 @@ For a typical parameterization ($t\!=\!16$, $R_F\!=\!8$, $R_P\!=\!13$), Poseidon
 % --- DEFINICIÓN ESPACIAL (Nodos) ---
 \node[on chain, font=\footnotesize\sffamily, inner sep=2pt, xshift=0.06cm] (inp) {state};
 
-\node[sbox] (sb1) {S-box};
-\node[mds]  (m1)  {MDS};
-\node[rc]   (r1)  {$+c_i$};
+\node[rc, xshift=0.10cm]   (r1)  {$+c_i$};
+\node[sbox]                (sb1) {S-box};
+\node[mds]                 (m1)  {MDS};
 
-\node[sbox, xshift=0.14cm] (sb2) {S-box};
-\node[mds]  (m2)  {MDS};
-\node[rc]   (r2)  {$+c_i$};
+\node[rc, xshift=0.14cm]   (r2)  {$+c_i$};
+\node[sbox]                (sb2) {S-box};
+\node[internal]            (m2)  {MI};
 
-\node[sbox, xshift=0.14cm] (sb3) {S-box};
-\node[mds]  (m3)  {MDS};
+\node[rc, xshift=0.14cm]   (r3)  {$+c_i$};
+\node[sbox]                (sb3) {S-box};
+\node[mds]                 (m3)  {MDS};
 
 \node[on chain, font=\footnotesize\sffamily, inner sep=2pt, xshift=-0.06cm] (out) {out};
 
 
 % --- ENRUTADO (Conexiones) ---
-\draw[arr] (inp) -- (sb1);
+\draw[arr] (inp) -- (r1);
+\draw[arr] (r1)  -- (sb1);
 \draw[arr] (sb1) -- (m1);
-\draw[arr] (m1)  -- (r1);
 
-\draw[trans_arr] (r1.east) -- node[above=6pt, lbl] {$\cdots$} (sb2.west);
+\draw[trans_arr] (m1.east) -- node[above=6pt, lbl] {$\cdots$} (r2.west);
+\draw[arr] (r2)  -- (sb2);
 \draw[arr] (sb2) -- (m2);
-\draw[arr] (m2)  -- (r2);
 
-\draw[trans_arr] (r2.east) -- node[above=6pt, lbl] {$\cdots$} (sb3.west);
+\draw[trans_arr] (m2.east) -- node[above=6pt, lbl] {$\cdots$} (r3.west);
+\draw[arr] (r3)  -- (sb3);
 \draw[arr] (sb3) -- (m3);
 \draw[arr] (m3)  -- (out);
 
 
 % --- ETIQUETADO ---
 \node[lbl, above=0.05cm of sb1] {$\forall s_i$};
-\node[group_label, above=0.35cm of m1] {Full ($\times R_F/2$)};
+\node[group_label, above=0.35cm of sb1] {Full ($\times R_F/2$)};
 
 \node[lbl, above=0.05cm of sb2] {$s_0$};
-\node[group_label, above=0.35cm of m2] {Partial ($\times R_P$)};
+\node[group_label, above=0.35cm of sb2] {Partial ($\times R_P$)};
 
 \node[lbl, above=0.05cm of sb3] {$\forall s_i$};
-\node[group_label, above=0.35cm of m3] {Full ($\times R_F/2$)};
+\node[group_label, above=0.35cm of sb3] {Full ($\times R_F/2$)};
 
 \end{tikzpicture}%
 }
 \caption{Poseidon2 permutation structure. The S-box ($x^d \Mod p$) dominates cost.}
 \label{fig:poseidon2-structure}
 \end{figure}
-
 Algorithm~\ref{alg:barrett} shows the pseudocode for the S-box layer, which is based on the modular Barrett multiplication~\cite{barrett1986} (\texttt{MULBARRET()}). We will go through this  code in more detail in  Section~\ref{subsec:sbox-openedge}
 
 \algrenewcommand\algorithmicrequire{\textbf{Input:}}

@@ -55,7 +55,7 @@ The resulting \cc{\MetricSboxCastmCC} (vs.\ \cc{\MetricSboxManualCC} for Manual)
 Under the energy model, \castm{} also remains the most efficient mapping at \nj{\MetricSboxCastmEnergyNJ}, below Manual at \nj{\MetricSboxManualEnergyNJ} and far below Compigra at \nj{\MetricSboxCompigraEnergyNJ}. The gap is architecturally coherent with the schedules themselves: Compigra expands the kernel into \MetricSboxCompigraDispatches{} dispatches, so its higher energy reflects not only a longer execution (\cc{\MetricSboxCompigraCC}) but also repeated launch and quiescent overheads that are largely avoided by the single-dispatch in the \castm{} schedule.
 
 \textbf{Productivity.}
-The Manual approach requires \lines{\MetricLocManual}; \castm{} requires \lines{\MetricLocCastm}---an approximately \timex{\MetricLocCompressionVsManual} reduction.
+The Manual approach requires \lines{\MetricLocManual}; \castm{} requires \lines{\MetricLocCastm}---an approximately \timex{\MetricLocCompressionVsManual} reduction---.
 This gap is structural: \castm{}'s parameterized functions and loop express the kernel once, whereas the hand-written schedule must spell out each PE-cycle placement explicitly, making coding slower and substantially more error-prone.
 
 \textbf{Code complexity.}
